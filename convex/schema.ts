@@ -32,6 +32,8 @@ export default defineSchema({
     onboarded: v.boolean(),
     createdAt: v.number(),
     lastSeenAt: v.optional(v.number()),
+    // Set when an admin deletes the account; personal data is anonymised (A-03).
+    deletedAt: v.optional(v.number()),
   })
     .index("by_email", ["email"])
     .index("by_role", ["role"])

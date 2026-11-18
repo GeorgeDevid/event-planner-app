@@ -33,7 +33,9 @@ export async function syncVendorLocation(
   }
 
   if (!vendor || vendor.status !== "approved" || !vendor.location) return;
-  for (const categoryId of vendor.categoryIds) {
+  // Deactivated categories are hidden from clients (A-05), so leave them out.
+  const activeIds = new Set(allCategories.filter((c) => c.active).map((c) => c._id));
+  for (const categoryId of vendor.categoryIds.filter((id) => activeIds.has(id))) {
     await vendorLocations.insert(
       ctx,
       keyFor(categoryId),
