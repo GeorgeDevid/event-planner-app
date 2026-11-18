@@ -18,6 +18,8 @@ export type AdminRole = Infer<typeof adminRole>;
 export const userStatus = v.union(v.literal("active"), v.literal("suspended"));
 
 export const vendorStatus = v.union(
+  // Setting up the business; not yet sent for review.
+  v.literal("draft"),
   v.literal("pending"),
   v.literal("approved"),
   v.literal("rejected"),

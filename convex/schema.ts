@@ -84,10 +84,15 @@ export default defineSchema({
     location: v.optional(v.object({ lat: v.number(), lng: v.number() })),
     serviceRadiusKm: v.number(),
     clientsComeToMe: v.boolean(),
+    // V-05: whether a day with an accepted booking stays open for more.
+    multipleBookingsPerDay: v.optional(v.boolean()),
     status: vendorStatus,
     verified: v.boolean(),
     featured: v.boolean(),
     rejectionReason: v.optional(v.string()),
+    coverImageId: v.optional(v.id("_storage")),
+    logoId: v.optional(v.id("_storage")),
+    submittedAt: v.optional(v.number()),
     // Mean of active package prices, kept up to date by the packages
     // mutations so search and cards never compute it on the fly (C-09, V-04).
     avgPriceCents: v.optional(v.number()),
@@ -95,6 +100,23 @@ export default defineSchema({
   })
     .index("by_owner", ["ownerId"])
     .index("by_status", ["status"]),
+
+  // Portfolio photos (V-03), up to 30 per vendor, shown in `order`.
+  vendorImages: defineTable({
+    vendorId: v.id("vendors"),
+    storageId: v.id("_storage"),
+    order: v.number(),
+  }).index("by_vendor_order", ["vendorId", "order"]),
+
+  // Supporting documents for approval (V-01): licence or ID, admin-only.
+  vendorDocuments: defineTable({
+    vendorId: v.id("vendors"),
+    storageId: v.id("_storage"),
+    name: v.string(),
+    contentType: v.string(),
+    size: v.number(),
+    uploadedAt: v.number(),
+  }).index("by_vendor", ["vendorId"]),
 
   packages: defineTable({
     vendorId: v.id("vendors"),

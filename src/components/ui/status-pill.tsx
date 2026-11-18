@@ -30,6 +30,8 @@ export function VendorStatusPill({ status }: { status: string }) {
       return <StatusPill tone="muted">Suspended</StatusPill>;
     case "deactivated":
       return <StatusPill tone="muted">Deactivated</StatusPill>;
+    case "draft":
+      return <StatusPill tone="info">Setup in progress</StatusPill>;
     default:
       return <StatusPill tone="pending">Pending review</StatusPill>;
   }

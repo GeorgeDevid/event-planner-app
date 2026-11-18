@@ -11,12 +11,15 @@
 import type * as admin from "../admin.js";
 import type * as auth from "../auth.js";
 import type * as catalog from "../catalog.js";
+import type * as geocode from "../geocode.js";
 import type * as lib_access from "../lib/access.js";
 import type * as lib_permissions from "../lib/permissions.js";
 import type * as lib_validators from "../lib/validators.js";
+import type * as lib_vendorAccess from "../lib/vendorAccess.js";
 import type * as seed from "../seed.js";
 import type * as users from "../users.js";
 import type * as vendorSearch from "../vendorSearch.js";
+import type * as vendors from "../vendors.js";
 
 import type {
   ApiFromModules,
@@ -28,12 +31,15 @@ declare const fullApi: ApiFromModules<{
   admin: typeof admin;
   auth: typeof auth;
   catalog: typeof catalog;
+  geocode: typeof geocode;
   "lib/access": typeof lib_access;
   "lib/permissions": typeof lib_permissions;
   "lib/validators": typeof lib_validators;
+  "lib/vendorAccess": typeof lib_vendorAccess;
   seed: typeof seed;
   users: typeof users;
   vendorSearch: typeof vendorSearch;
+  vendors: typeof vendors;
 }>;
 
 /**

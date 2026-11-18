@@ -102,7 +102,8 @@ export const me = query({
 /**
  * First-run setup after sign-up: the person's name and whether they are
  * planning events (client) or offering services (vendor). A vendor business
- * starts as "pending" and is hidden from search until an admin approves it (V-01).
+ * starts as a draft; the vendor finishes setup and submits it for review, and
+ * it stays hidden from search until an admin approves it (V-01).
  */
 export const completeOnboarding = mutation({
   args: {
@@ -140,7 +141,8 @@ export const completeOnboarding = mutation({
         categoryIds: [],
         serviceRadiusKm: 25,
         clientsComeToMe: false,
-        status: "pending",
+        // Draft until the vendor finishes setup and submits it for review.
+        status: "draft",
         verified: false,
         featured: false,
         createdAt: Date.now(),
