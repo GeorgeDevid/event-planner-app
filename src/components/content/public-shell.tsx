@@ -27,7 +27,7 @@ export function SiteFooter() {
         <Link href="/terms" className="hover:text-ink">Terms of Service</Link>
         <Link href="/privacy" className="hover:text-ink">Privacy Policy</Link>
       </nav>
-      <p className="mt-3">© {new Date().getFullYear()} Event Planner · Greater Toronto Area</p>
+      <p className="mt-3">© Event Planner · Greater Toronto Area</p>
     </footer>
   );
 }
