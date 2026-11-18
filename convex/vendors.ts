@@ -1,3 +1,4 @@
+import { torontoToday } from "./lib/dates";
 import { ConvexError, v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
 import { mutation, query, type QueryCtx } from "./_generated/server";
@@ -528,14 +529,6 @@ export const calendar = query({
   },
 });
 
-function torontoToday() {
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone: "America/Toronto",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date());
-}
 
 export const setDatesBlocked = mutation({
   args: { dates: v.array(v.string()), blocked: v.boolean() },

@@ -10,3 +10,12 @@ export function errorMessage(err: unknown, fallback = "Something went wrong. Ple
   if (err instanceof Error && err.message.startsWith("Upload failed")) return err.message;
   return fallback;
 }
+
+/** The field a failed Convex call points at, when the server named one. */
+export function errorField(err: unknown): string | null {
+  if (err instanceof ConvexError) {
+    const data = err.data as { field?: string } | string;
+    if (typeof data === "object" && data?.field) return data.field;
+  }
+  return null;
+}

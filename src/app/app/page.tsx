@@ -1,9 +1,12 @@
 "use client";
 
+import { useQuery } from "convex/react";
 import Link from "next/link";
+import { api } from "../../../convex/_generated/api";
 import { useMe } from "@/components/shell/role-gate";
 import { SignOutButton } from "@/components/shell/sign-out-button";
 import { ArrowBadge } from "@/components/ui/button";
+import { formatIsoDate } from "@/lib/format";
 
 function greeting() {
   const hour = new Date().getHours();
@@ -77,9 +80,41 @@ export default function ClientHome() {
         </Link>
       </section>
 
-      <p className="rounded-[20px] bg-surface-2 p-4 text-sm text-ink-2">
-        Event planning and vendor search arrive in the next build steps.
-      </p>
+<UpcomingEvents />
     </div>
+  );
+}
+
+function UpcomingEvents() {
+  const events = useQuery(api.events.mine);
+  const upcoming = (events ?? []).filter((e) => !e.past).slice(0, 3);
+  if (upcoming.length === 0) return null;
+  return (
+    <section aria-labelledby="your-events" className="flex flex-col gap-3">
+      <div className="flex items-baseline justify-between">
+        <h2 id="your-events" className="text-[17px] font-bold">Your events</h2>
+        <Link href="/app/events" className="text-sm font-semibold text-gold-text">See all</Link>
+      </div>
+      <ul className="flex flex-col gap-2">
+        {upcoming.map((e) => (
+          <li key={e._id}>
+            <Link
+              href={e.status === "draft" ? `/app/events/${e._id}/setup` : `/app/events/${e._id}`}
+              className="flex items-center gap-3 rounded-[20px] bg-surface p-4 shadow-card"
+            >
+              <span className="min-w-0 flex-1">
+                <span className="block text-xs font-semibold text-gold-text">
+                  {e.type}
+                  {e.status === "draft" ? " · Draft" : ""}
+                </span>
+                <span className="block truncate font-semibold">{e.name}</span>
+                <span className="block text-sm text-ink-2">{e.date ? formatIsoDate(e.date) : "No date yet"}</span>
+              </span>
+              <ArrowBadge tone="dark" />
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
