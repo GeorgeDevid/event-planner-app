@@ -20,6 +20,7 @@ import type * as adminVendors from "../adminVendors.js";
 import type * as auth from "../auth.js";
 import type * as bookings from "../bookings.js";
 import type * as catalog from "../catalog.js";
+import type * as content from "../content.js";
 import type * as events from "../events.js";
 import type * as geocode from "../geocode.js";
 import type * as inquiries from "../inquiries.js";
@@ -36,6 +37,7 @@ import type * as reports from "../reports.js";
 import type * as seed from "../seed.js";
 import type * as users from "../users.js";
 import type * as vendorSearch from "../vendorSearch.js";
+import type * as vendorStats from "../vendorStats.js";
 import type * as vendors from "../vendors.js";
 
 import type {
@@ -57,6 +59,7 @@ declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   bookings: typeof bookings;
   catalog: typeof catalog;
+  content: typeof content;
   events: typeof events;
   geocode: typeof geocode;
   inquiries: typeof inquiries;
@@ -73,6 +76,7 @@ declare const fullApi: ApiFromModules<{
   seed: typeof seed;
   users: typeof users;
   vendorSearch: typeof vendorSearch;
+  vendorStats: typeof vendorStats;
   vendors: typeof vendors;
 }>;
 

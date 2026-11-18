@@ -13,6 +13,7 @@ import type { MutationCtx } from "../_generated/server";
  *   Resend account owner's address.
  * - APP_URL: the site's address, for links in emails.
  * - EMAIL_TEST_MODE=true: only deliver to Resend's test addresses.
+ * - EMAIL_DISABLED=true: send nothing (used while running automated checks).
  */
 export const resend = new Resend(components.resend, {
   testMode: process.env.EMAIL_TEST_MODE === "true",
@@ -28,6 +29,10 @@ export async function sendEmail(
   to: string,
   message: { subject: string; heading: string; body?: string; cta?: { label: string; href: string }; footnote?: string },
 ) {
+  if (process.env.EMAIL_DISABLED === "true") {
+    console.log(`[email disabled] to=${to} subject="${message.subject}"`);
+    return null;
+  }
   if (!process.env.RESEND_API_KEY) {
     console.log(`[email skipped: RESEND_API_KEY not set] to=${to} subject="${message.subject}"`);
     return null;

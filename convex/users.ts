@@ -157,11 +157,22 @@ export const completeOnboarding = mutation({
       })) ??
       undefined;
 
+    // Finishing sign-up accepts the Terms and Privacy Policy in force (A-09).
+    const current = async (kind: "terms" | "privacy") =>
+      (
+        await ctx.db
+          .query("legalDocs")
+          .withIndex("by_kind_version", (q) => q.eq("kind", kind))
+          .order("desc")
+          .collect()
+      ).find((d) => d.status === "published")?.version;
     await ctx.db.patch(user._id, {
       name,
       email,
       role: args.accountType,
       onboarded: true,
+      acceptedTermsVersion: await current("terms"),
+      acceptedPrivacyVersion: await current("privacy"),
     });
     return { role: args.accountType };
   },

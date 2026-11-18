@@ -34,6 +34,9 @@ export default defineSchema({
     lastSeenAt: v.optional(v.number()),
     // Set when an admin deletes the account; personal data is anonymised (A-03).
     deletedAt: v.optional(v.number()),
+    // Versions of the Terms and Privacy Policy this person accepted (A-09 #3).
+    acceptedTermsVersion: v.optional(v.number()),
+    acceptedPrivacyVersion: v.optional(v.number()),
   })
     .index("by_email", ["email"])
     .index("by_role", ["role"])
@@ -232,6 +235,7 @@ export default defineSchema({
     notes: v.optional(v.string()),
     status: bookingStatus,
     statusReason: v.optional(v.string()),
+    acceptedAt: v.optional(v.number()),
     updatedAt: v.optional(v.number()),
     createdAt: v.number(),
   })
@@ -239,6 +243,48 @@ export default defineSchema({
     .index("by_client", ["clientId"])
     .index("by_event", ["eventId"])
     .index("by_inquiry", ["inquiryId"]),
+
+  // V-08: one row per viewer per vendor per day.
+  profileViews: defineTable({
+    vendorId: v.id("vendors"),
+    viewerKey: v.string(),
+    day: v.string(),
+    at: v.number(),
+  })
+    .index("by_vendor_at", ["vendorId", "at"])
+    .index("by_vendor_viewer_day", ["vendorId", "viewerKey", "day"]),
+
+  // A-09 site content. Drafts are edited and previewed, then published.
+  banners: defineTable({
+    title: v.string(),
+    body: v.optional(v.string()),
+    imageId: v.optional(v.id("_storage")),
+    linkUrl: v.optional(v.string()),
+    linkLabel: v.optional(v.string()),
+    startsOn: v.optional(v.string()),
+    endsOn: v.optional(v.string()),
+    published: v.boolean(),
+    order: v.number(),
+    updatedAt: v.number(),
+  }).index("by_order", ["order"]),
+
+  faqs: defineTable({
+    question: v.string(),
+    answer: v.string(),
+    published: v.boolean(),
+    order: v.number(),
+    updatedAt: v.number(),
+  }).index("by_order", ["order"]),
+
+  // Each publish creates a new version; people accept the latest (A-09 #3).
+  legalDocs: defineTable({
+    kind: v.union(v.literal("terms"), v.literal("privacy")),
+    version: v.number(),
+    body: v.string(),
+    status: v.union(v.literal("draft"), v.literal("published")),
+    publishedAt: v.optional(v.number()),
+    updatedAt: v.number(),
+  }).index("by_kind_version", ["kind", "version"]),
 
   // In-app notifications (C-12 #2, C-14 #2, V-07 #1). Email comes later and
   // goes out from the same helper.

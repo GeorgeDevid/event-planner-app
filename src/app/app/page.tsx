@@ -4,6 +4,7 @@ import { useQuery } from "convex/react";
 import Link from "next/link";
 import { api } from "../../../convex/_generated/api";
 import { useMe } from "@/components/shell/role-gate";
+import { HomeBanners } from "@/components/content/banners";
 import { NotificationBell } from "@/components/messaging/notifications";
 import { ArrowBadge } from "@/components/ui/button";
 import { formatIsoDate } from "@/lib/format";
@@ -40,6 +41,8 @@ export default function ClientHome() {
         </div>
         <NotificationBell href="/app/notifications" />
       </header>
+
+      <HomeBanners />
 
       <h1 className="text-[28px] leading-[34px] font-bold tracking-tight">
         Plan your

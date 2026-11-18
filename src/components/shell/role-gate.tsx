@@ -3,6 +3,7 @@
 import { useQuery } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
 import Link from "next/link";
+import { PolicyGate } from "@/components/content/policy-gate";
 import { useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, type ReactNode } from "react";
 import { api } from "../../../convex/_generated/api";
@@ -63,5 +64,9 @@ export function RoleGate({
     );
   }
   if (!allowed) return <FullPageLoader />;
-  return <MeContext.Provider value={me}>{children}</MeContext.Provider>;
+  return (
+    <MeContext.Provider value={me}>
+      <PolicyGate>{children}</PolicyGate>
+    </MeContext.Provider>
+  );
 }

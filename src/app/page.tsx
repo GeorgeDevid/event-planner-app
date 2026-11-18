@@ -1,4 +1,5 @@
 import { ArrowBadge, LinkButton } from "@/components/ui/button";
+import { SiteFooter } from "@/components/content/public-shell";
 import { Logo } from "@/components/ui/logo";
 
 const CATEGORIES = [
@@ -66,6 +67,7 @@ export default function Landing() {
           ))}
         </ul>
       </section>
+      <SiteFooter />
     </main>
   );
 }

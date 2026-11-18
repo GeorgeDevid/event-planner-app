@@ -7,6 +7,7 @@ import { ArrowBadge, LinkButton } from "@/components/ui/button";
 import { Card } from "@/components/ui/kit";
 import { FullPageLoader } from "@/components/ui/loader";
 import { VendorStatusPill } from "@/components/ui/status-pill";
+import { VendorStats } from "@/components/vendor/stats";
 import { useMyVendor } from "@/components/vendor/use-vendor";
 import { formatCents } from "@/lib/format";
 
@@ -90,6 +91,8 @@ export default function VendorDashboard() {
           </p>
         )}
       </Card>
+
+      {vendor.status === "approved" || vendor.status === "suspended" ? <VendorStats /> : null}
 
       {remaining > 0 ? (
         <Card className="flex flex-col gap-3">

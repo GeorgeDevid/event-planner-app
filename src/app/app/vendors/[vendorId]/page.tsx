@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery } from "convex/react";
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { api } from "../../../../../convex/_generated/api";
 import type { Id } from "../../../../../convex/_generated/dataModel";
 import { ReportSheet } from "@/components/messaging/report-sheet";
@@ -21,6 +21,11 @@ export default function ClientVendorProfile() {
   const profile = useQuery(api.vendors.publicProfile, { vendorId: id });
   const [adding, setAdding] = useState(false);
   const [reporting, setReporting] = useState(false);
+  const recordView = useMutation(api.vendorStats.recordView);
+  // V-08: count the visit (once per person per day, on the server).
+  useEffect(() => {
+    void recordView({ vendorId: id }).catch(() => {});
+  }, [id, recordView]);
 
   // Go back to the results so filters stay as they were (C-08 #7).
   const back = () => (window.history.length > 1 ? router.back() : router.push("/app"));

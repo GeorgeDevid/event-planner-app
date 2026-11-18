@@ -244,7 +244,7 @@ export const respond = mutation({
       const clash = await conflict(ctx, vendor, booking.serviceDate, booking._id);
       if (clash === "blocked") invalid("That day is blocked on your calendar. Unblock it first, or decline.");
       if (clash === "booked") invalid("You already have a booking that day. Turn on more than one booking per day in your calendar, or decline.");
-      await ctx.db.patch(booking._id, { status: "accepted", updatedAt: Date.now() });
+      await ctx.db.patch(booking._id, { status: "accepted", acceptedAt: Date.now(), updatedAt: Date.now() });
       await record(ctx, inquiry, booking._id, `${vendor.companyName} accepted the booking for ${niceDate(booking.serviceDate)}.`);
       await notify(ctx, booking.clientId, { title: `${vendor.companyName} accepted your booking`, body: niceDate(booking.serviceDate), href });
     } else {
