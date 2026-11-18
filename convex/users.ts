@@ -147,8 +147,18 @@ export const completeOnboarding = mutation({
       });
     }
 
+    // At sign-up the username (email) is stored after the user record is
+    // created, so pick it up here if onSignIn couldn't.
+    const email =
+      user.email ??
+      (await ctx.runQuery(components.authUsername.public.getUsername, {
+        userId: user._id,
+      })) ??
+      undefined;
+
     await ctx.db.patch(user._id, {
       name,
+      email,
       role: args.accountType,
       onboarded: true,
     });
