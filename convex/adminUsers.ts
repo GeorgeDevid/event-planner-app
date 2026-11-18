@@ -1,6 +1,7 @@
 import { ConvexError, v } from "convex/values";
 import { components } from "./_generated/api";
-import { mutation, query } from "./_generated/server";
+import type { Doc } from "./_generated/dataModel";
+import { mutation, query, type MutationCtx } from "./_generated/server";
 import { audit, requirePermission } from "./lib/access";
 import { revokeAllSessions } from "./lib/sessions";
 import { userRole, userStatus } from "./lib/validators";
@@ -108,39 +109,7 @@ export const setSuspended = mutation({
     const text = suspended ? requireReason(reason ?? "") : reason?.trim() || undefined;
     if ((user.status === "suspended") === suspended) return;
 
-    await ctx.db.patch(userId, { status: suspended ? "suspended" : "active" });
-    let sessionsRevoked = 0;
-    if (suspended) {
-      sessionsRevoked = await revokeAllSessions(ctx, userId);
-      // A suspended vendor's business leaves search too; reactivating the
-      // person doesn't relist it automatically (an admin reviews it).
-      const vendor = await ctx.db
-        .query("vendors")
-        .withIndex("by_owner", (q) => q.eq("ownerId", userId))
-        .unique();
-      if (vendor && (vendor.status === "approved" || vendor.status === "pending")) {
-        await ctx.db.patch(vendor._id, { status: "suspended" });
-        await syncVendorLocation(ctx, vendor._id);
-        await audit(ctx, {
-          actor: admin,
-          action: "vendor.suspended",
-          module: "vendors",
-          targetTable: "vendors",
-          targetId: vendor._id,
-          before: { status: vendor.status },
-          after: { status: "suspended", reason: "Owner account suspended" },
-        });
-      }
-    }
-    await audit(ctx, {
-      actor: admin,
-      action: suspended ? "user.suspended" : "user.reactivated",
-      module: "users",
-      targetTable: "users",
-      targetId: userId,
-      before: { status: user.status },
-      after: { status: suspended ? "suspended" : "active", ...(text ? { reason: text } : {}), sessionsRevoked },
-    });
+    await applySuspension(ctx, admin, user, suspended, text);
   },
 });
 
@@ -215,3 +184,47 @@ export const remove = mutation({
     });
   },
 });
+
+/** Suspend or reactivate a user; shared with moderation (A-03, A-08). */
+export async function applySuspension(
+  ctx: MutationCtx,
+  admin: Doc<"users">,
+  user: Doc<"users">,
+  suspended: boolean,
+  text: string | undefined,
+) {
+  const userId = user._id;
+    await ctx.db.patch(userId, { status: suspended ? "suspended" : "active" });
+    let sessionsRevoked = 0;
+    if (suspended) {
+      sessionsRevoked = await revokeAllSessions(ctx, userId);
+      // A suspended vendor's business leaves search too; reactivating the
+      // person doesn't relist it automatically (an admin reviews it).
+      const vendor = await ctx.db
+        .query("vendors")
+        .withIndex("by_owner", (q) => q.eq("ownerId", userId))
+        .unique();
+      if (vendor && (vendor.status === "approved" || vendor.status === "pending")) {
+        await ctx.db.patch(vendor._id, { status: "suspended" });
+        await syncVendorLocation(ctx, vendor._id);
+        await audit(ctx, {
+          actor: admin,
+          action: "vendor.suspended",
+          module: "vendors",
+          targetTable: "vendors",
+          targetId: vendor._id,
+          before: { status: vendor.status },
+          after: { status: "suspended", reason: "Owner account suspended" },
+        });
+      }
+    }
+    await audit(ctx, {
+      actor: admin,
+      action: suspended ? "user.suspended" : "user.reactivated",
+      module: "users",
+      targetTable: "users",
+      targetId: userId,
+      before: { status: user.status },
+      after: { status: suspended ? "suspended" : "active", ...(text ? { reason: text } : {}), sessionsRevoked },
+    });
+}

@@ -126,6 +126,9 @@ export const publicProfile = query({
       featured: vendor.featured,
       avgPriceCents: vendor.avgPriceCents ?? null,
       categories: categories.filter((c) => c !== null).map((c) => c.name),
+      categoryOptions: categories
+        .filter((c) => c !== null && c.active)
+        .map((c) => ({ _id: c!._id, name: c!.name })),
       coverUrl: vendor.coverImageId ? await ctx.storage.getUrl(vendor.coverImageId) : null,
       logoUrl: vendor.logoId ? await ctx.storage.getUrl(vendor.logoId) : null,
       images: images.map((i) => i.url),

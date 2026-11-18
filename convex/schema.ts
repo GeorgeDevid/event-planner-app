@@ -169,30 +169,105 @@ export default defineSchema({
     vendorId: v.id("vendors"),
     eventId: v.optional(v.id("events")),
     categoryId: v.optional(v.id("categories")),
+    // The first message, kept for previews.
     message: v.string(),
+    // What the client shared when they sent it (C-12 #1, #5). A snapshot, so
+    // later edits to the event don't change what the vendor was told.
+    details: v.optional(
+      v.object({
+        eventType: v.optional(v.string()),
+        eventName: v.optional(v.string()),
+        category: v.optional(v.string()),
+        date: v.optional(v.string()),
+        location: v.optional(v.string()),
+        guestCount: v.optional(v.number()),
+        budgetMinCents: v.optional(v.number()),
+        budgetMaxCents: v.optional(v.number()),
+      }),
+    ),
     status: inquiryStatus,
+    statusReason: v.optional(v.string()),
+    lastMessageAt: v.optional(v.number()),
+    clientLastReadAt: v.optional(v.number()),
+    vendorLastReadAt: v.optional(v.number()),
     createdAt: v.number(),
   })
     .index("by_vendor", ["vendorId"])
     .index("by_client", ["clientId"])
     .index("by_event_vendor", ["eventId", "vendorId"]),
 
+  // One thread per inquiry (C-13). System messages record status changes.
+  messages: defineTable({
+    inquiryId: v.id("inquiries"),
+    senderId: v.optional(v.id("users")),
+    from: v.union(v.literal("client"), v.literal("vendor"), v.literal("system")),
+    body: v.string(),
+    imageIds: v.optional(v.array(v.id("_storage"))),
+    quote: v.optional(
+      v.object({
+        packageId: v.optional(v.id("packages")),
+        packageName: v.optional(v.string()),
+        priceCents: v.number(),
+        notes: v.optional(v.string()),
+        validUntil: v.optional(v.string()),
+      }),
+    ),
+    bookingId: v.optional(v.id("bookings")),
+    // Set when a moderator removes the message (A-08).
+    removedAt: v.optional(v.number()),
+    createdAt: v.number(),
+  }).index("by_inquiry", ["inquiryId", "createdAt"]),
+
   // Booking requests (C-14, V-07). Payment is arranged outside the app.
   bookings: defineTable({
     clientId: v.id("users"),
     vendorId: v.id("vendors"),
     eventId: v.optional(v.id("events")),
+    inquiryId: v.optional(v.id("inquiries")),
+    categoryId: v.optional(v.id("categories")),
     serviceDate: v.string(),
     packageId: v.optional(v.id("packages")),
+    packageName: v.optional(v.string()),
     agreedPriceCents: v.optional(v.number()),
     notes: v.optional(v.string()),
     status: bookingStatus,
     statusReason: v.optional(v.string()),
+    updatedAt: v.optional(v.number()),
     createdAt: v.number(),
   })
     .index("by_vendor", ["vendorId"])
     .index("by_client", ["clientId"])
-    .index("by_event", ["eventId"]),
+    .index("by_event", ["eventId"])
+    .index("by_inquiry", ["inquiryId"]),
+
+  // In-app notifications (C-12 #2, C-14 #2, V-07 #1). Email comes later and
+  // goes out from the same helper.
+  notifications: defineTable({
+    userId: v.id("users"),
+    title: v.string(),
+    body: v.optional(v.string()),
+    href: v.optional(v.string()),
+    readAt: v.optional(v.number()),
+    createdAt: v.number(),
+  }).index("by_user", ["userId", "createdAt"]),
+
+  // Reports for moderation (A-08, C-10 #5, C-13 #4).
+  reports: defineTable({
+    reporterId: v.id("users"),
+    targetType: v.union(v.literal("vendor"), v.literal("conversation")),
+    vendorId: v.optional(v.id("vendors")),
+    inquiryId: v.optional(v.id("inquiries")),
+    reason: v.string(),
+    details: v.optional(v.string()),
+    status: v.union(v.literal("open"), v.literal("in_review"), v.literal("resolved")),
+    resolution: v.optional(v.string()),
+    action: v.optional(v.string()),
+    resolvedBy: v.optional(v.id("users")),
+    resolvedAt: v.optional(v.number()),
+    createdAt: v.number(),
+  })
+    .index("by_status", ["status", "createdAt"])
+    .index("by_inquiry", ["inquiryId"]),
 
   // Read-only record of sensitive changes (A-11).
   auditLog: defineTable({

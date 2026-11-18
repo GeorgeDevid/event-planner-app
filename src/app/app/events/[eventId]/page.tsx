@@ -134,6 +134,7 @@ function EventDashboard() {
 function EditMenu({ eventId, hasQuestions }: { eventId: Id<"events">; hasQuestions: boolean }) {
   const router = useRouter();
   const cancel = useMutation(api.events.cancel);
+  const duplicate = useMutation(api.events.duplicate);
   const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const link = "flex min-h-14 items-center justify-between rounded-[18px] bg-surface-2 px-4 text-[15px] font-semibold";
@@ -142,10 +143,24 @@ function EditMenu({ eventId, hasQuestions }: { eventId: Id<"events">; hasQuestio
       <Link className={link} href={`/app/events/${eventId}/setup?step=basics`}>Date, location, guests and budget <span aria-hidden="true">›</span></Link>
       {hasQuestions ? <Link className={link} href={`/app/events/${eventId}/setup?step=questions`}>Event questions <span aria-hidden="true">›</span></Link> : null}
       <Link className={link} href={`/app/events/${eventId}/setup?step=services`}>Services <span aria-hidden="true">›</span></Link>
+      <button
+        type="button"
+        className={link}
+        onClick={async () => {
+          try {
+            const copy = await duplicate({ eventId });
+            router.push(`/app/events/${copy}/setup?step=basics`);
+          } catch (err) {
+            setError(errorMessage(err));
+          }
+        }}
+      >
+        Duplicate event <span aria-hidden="true">›</span>
+      </button>
       {error ? <p className="text-sm text-danger">{error}</p> : null}
       {confirming ? (
         <div className="mt-2 flex flex-col gap-2 rounded-[18px] border border-danger/30 p-4">
-          <p className="text-sm">Cancel this event? It disappears from your events. Vendors you contacted aren&apos;t told automatically.</p>
+          <p className="text-sm">Cancel this event? Open booking requests are cancelled, and vendors you&apos;ve contacted are told.</p>
           <div className="flex gap-2">
             <Button type="button" variant="secondary" className="flex-1" onClick={() => setConfirming(false)}>Keep it</Button>
             <Button

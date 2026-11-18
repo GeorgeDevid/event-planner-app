@@ -8,21 +8,27 @@
  * @module
  */
 
+import type * as account from "../account.js";
 import type * as admin from "../admin.js";
 import type * as adminAudit from "../adminAudit.js";
 import type * as adminCategories from "../adminCategories.js";
 import type * as adminUsers from "../adminUsers.js";
 import type * as adminVendors from "../adminVendors.js";
 import type * as auth from "../auth.js";
+import type * as bookings from "../bookings.js";
 import type * as catalog from "../catalog.js";
 import type * as events from "../events.js";
 import type * as geocode from "../geocode.js";
+import type * as inquiries from "../inquiries.js";
 import type * as lib_access from "../lib/access.js";
 import type * as lib_dates from "../lib/dates.js";
 import type * as lib_permissions from "../lib/permissions.js";
 import type * as lib_sessions from "../lib/sessions.js";
+import type * as lib_threads from "../lib/threads.js";
 import type * as lib_validators from "../lib/validators.js";
 import type * as lib_vendorAccess from "../lib/vendorAccess.js";
+import type * as notifications from "../notifications.js";
+import type * as reports from "../reports.js";
 import type * as seed from "../seed.js";
 import type * as users from "../users.js";
 import type * as vendorSearch from "../vendorSearch.js";
@@ -35,21 +41,27 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  account: typeof account;
   admin: typeof admin;
   adminAudit: typeof adminAudit;
   adminCategories: typeof adminCategories;
   adminUsers: typeof adminUsers;
   adminVendors: typeof adminVendors;
   auth: typeof auth;
+  bookings: typeof bookings;
   catalog: typeof catalog;
   events: typeof events;
   geocode: typeof geocode;
+  inquiries: typeof inquiries;
   "lib/access": typeof lib_access;
   "lib/dates": typeof lib_dates;
   "lib/permissions": typeof lib_permissions;
   "lib/sessions": typeof lib_sessions;
+  "lib/threads": typeof lib_threads;
   "lib/validators": typeof lib_validators;
   "lib/vendorAccess": typeof lib_vendorAccess;
+  notifications: typeof notifications;
+  reports: typeof reports;
   seed: typeof seed;
   users: typeof users;
   vendorSearch: typeof vendorSearch;

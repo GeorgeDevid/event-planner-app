@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useMe } from "@/components/shell/role-gate";
-import { SignOutButton } from "@/components/shell/sign-out-button";
+import { NotificationBell } from "@/components/messaging/notifications";
 import { ArrowBadge, LinkButton } from "@/components/ui/button";
 import { Card } from "@/components/ui/kit";
 import { FullPageLoader } from "@/components/ui/loader";
@@ -38,7 +38,10 @@ export default function VendorDashboard() {
           <p className="text-xs text-ink-2">Welcome back, {me.name?.split(" ")[0]}</p>
           <p className="truncate text-[15px] font-bold">{vendor.companyName}</p>
         </div>
-        <SignOutButton className="bg-surface text-navy-900 shadow-card" />
+        <NotificationBell href="/vendor/notifications" />
+        <Link href="/vendor/account" aria-label="Account" className="flex size-11 items-center justify-center rounded-full bg-surface text-navy-900 shadow-card">
+          <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></svg>
+        </Link>
       </header>
 
       <h1 className="text-[28px] leading-[34px] font-bold tracking-tight">

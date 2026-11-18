@@ -42,7 +42,7 @@ export default function MyEvents() {
                       <p className="mt-1 text-sm font-semibold text-navy-900">Finish setup</p>
                     ) : (
                       <p className="mt-1 text-sm text-ink-2">
-                        {e.serviceCount} services · {e.shortlistCount} saved vendors
+                        {e.bookedCount} of {e.serviceCount} services booked · {e.shortlistCount} saved
                       </p>
                     )}
                   </div>

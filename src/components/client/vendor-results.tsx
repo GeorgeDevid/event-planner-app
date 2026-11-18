@@ -170,7 +170,9 @@ export function VendorResults({
         </div>
       ) : (
         <ul className="flex flex-col gap-4">
-          {results.map((r) => (
+          {[...results]
+            .sort((a, b) => Number(savedIds.includes(b._id)) - Number(savedIds.includes(a._id)))
+            .map((r) => (
             <li key={r._id}>
               <VendorCard vendor={r} saved={savedIds.includes(r._id)} />
             </li>

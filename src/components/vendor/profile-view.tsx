@@ -18,12 +18,15 @@ export function VendorProfileView({
   topLeft,
   actions,
   actionsBottom = "bottom-3",
+  footer,
 }: {
   profile: PublicProfile;
   topLeft?: ReactNode;
   actions?: ReactNode;
   /** Lift the action bar above a bottom tab bar when there is one. */
   actionsBottom?: "bottom-3" | "bottom-24";
+  /** Extra content under the packages, e.g. "Report this vendor". */
+  footer?: ReactNode;
 }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const photos = profile.images.filter((u): u is string => !!u);
@@ -112,6 +115,7 @@ export function VendorProfileView({
             <p className="mt-2 text-sm text-ink-2">Price on request.</p>
           )}
         </section>
+        {footer}
       </div>
 
       {openIndex !== null ? (

@@ -4,7 +4,7 @@ import { RoleGate } from "@/components/shell/role-gate";
 const NAV = [
   { href: "/app", label: "Home", icon: icons.home },
   { href: "/app/events", label: "Events", icon: icons.calendar },
-  { href: "/app/messages", label: "Messages", icon: icons.chat },
+  { href: "/app/messages", unreadBadge: true, label: "Messages", icon: icons.chat },
   { href: "/app/profile", label: "Profile", icon: icons.user },
 ];
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { ChangePasswordForm } from "@/components/messaging/change-password";
 import { useMe } from "@/components/shell/role-gate";
 import { SignOutButton } from "@/components/shell/sign-out-button";
 import { Card, PageHeader } from "@/components/ui/kit";
@@ -19,6 +20,10 @@ export default function ClientProfile() {
           <p className="text-xs font-semibold text-ink-2">Email</p>
           <p className="text-[15px]">{me.email}</p>
         </div>
+      </Card>
+      <Card className="flex flex-col gap-4">
+        <h2 className="text-[17px] font-bold">Change password</h2>
+        <ChangePasswordForm />
       </Card>
       <SignOutButton className="self-start bg-surface text-navy-900 shadow-card" />
     </div>

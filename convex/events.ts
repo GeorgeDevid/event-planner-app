@@ -3,6 +3,7 @@ import type { Doc, Id } from "./_generated/dataModel";
 import { mutation, query, type QueryCtx } from "./_generated/server";
 import { requireRole } from "./lib/access";
 import { isIsoDate, torontoToday } from "./lib/dates";
+import { isOpen, notify, postMessage } from "./lib/threads";
 
 function invalid(message: string, field?: string): never {
   throw new ConvexError({ code: "INVALID", message, ...(field ? { field } : {}) });
@@ -233,9 +234,20 @@ export const mine = query({
       .collect();
     const types = new Map((await ctx.db.query("eventTypes").collect()).map((t) => [t._id, t.name]));
     const today = torontoToday();
+    const bookings = await ctx.db
+      .query("bookings")
+      .withIndex("by_client", (q) => q.eq("clientId", client._id))
+      .collect();
+    const bookedServices = (eventId: Id<"events">) =>
+      new Set(
+        bookings
+          .filter((b) => b.eventId === eventId && (b.status === "accepted" || b.status === "completed"))
+          .map((b) => b.categoryId ?? b.vendorId),
+      ).size;
     return events
       .filter((e) => e.status !== "cancelled")
       .map((e) => ({
+        bookedCount: bookedServices(e._id),
         _id: e._id,
         name: e.name,
         type: types.get(e.eventTypeId) ?? "Event",
@@ -292,10 +304,11 @@ export const get = query({
         if (RANK[s] > RANK[best]) best = s;
       };
       for (const v of shortlisted) if (v.categoryIds.includes(categoryId)) bump("shortlisted");
-      for (const i of inquiries) if (i.categoryId === categoryId) bump("inquiry_sent");
+      for (const i of inquiries) {
+        if (i.categoryId === categoryId && (i.status === "sent" || i.status === "quoted")) bump("inquiry_sent");
+      }
       for (const b of bookings) {
-        const vendor = shortlisted.find((v) => v._id === b.vendorId);
-        if (!vendor?.categoryIds.includes(categoryId)) continue;
+        if (b.categoryId !== categoryId) continue;
         if (b.status === "accepted" || b.status === "completed") bump("booked");
         else if (b.status === "pending") bump("booking_requested");
       }
@@ -374,13 +387,70 @@ export const setShortlisted = mutation({
   },
 });
 
+/** C-15 #2: copy an event (as a draft) to plan a similar one. */
+export const duplicate = mutation({
+  args: { eventId: v.id("events") },
+  handler: async (ctx, { eventId }) => {
+    const { client, event } = await requireMyEvent(ctx, eventId);
+    const name = `${event.name} (copy)`.slice(0, 80);
+    const date = event.date && event.date >= torontoToday() ? event.date : undefined;
+    return await ctx.db.insert("events", {
+      clientId: client._id,
+      eventTypeId: event.eventTypeId,
+      name,
+      date,
+      address: event.address,
+      location: event.location,
+      guestCount: event.guestCount,
+      budgetMinCents: event.budgetMinCents,
+      budgetMaxCents: event.budgetMaxCents,
+      answers: event.answers,
+      functions: event.functions.map((f) => ({ ...f, date: f.date && f.date >= torontoToday() ? f.date : undefined })),
+      selectedCategoryIds: event.selectedCategoryIds,
+      shortlistedVendorIds: [],
+      status: "draft",
+      createdAt: Date.now(),
+    });
+  },
+});
+
+/**
+ * Cancel an event (C-15 #3). Drafts are deleted. For an active event, open
+ * bookings are cancelled, open inquiries closed, and each vendor is told.
+ */
 export const cancel = mutation({
   args: { eventId: v.id("events") },
   handler: async (ctx, { eventId }) => {
-    const { event } = await requireMyEvent(ctx, eventId);
+    const { client, event } = await requireMyEvent(ctx, eventId);
     if (event.status === "draft") {
       await ctx.db.delete(eventId);
       return "deleted" as const;
+    }
+    if (event.status === "cancelled") return "cancelled" as const;
+    const reason = "The client cancelled the event.";
+    const told = new Set<string>();
+    const bookings = await ctx.db.query("bookings").withIndex("by_event", (q) => q.eq("eventId", eventId)).collect();
+    for (const b of bookings) {
+      if (b.status !== "pending" && b.status !== "accepted") continue;
+      await ctx.db.patch(b._id, { status: "cancelled", statusReason: reason, updatedAt: Date.now() });
+    }
+    const inquiries = (await ctx.db.query("inquiries").withIndex("by_client", (q) => q.eq("clientId", client._id)).collect()).filter(
+      (i) => i.eventId === eventId,
+    );
+    for (const i of inquiries) {
+      const hasLiveBooking = bookings.some((b) => b.inquiryId === i._id && (b.status === "pending" || b.status === "accepted"));
+      if (!isOpen(i) && !hasLiveBooking) continue;
+      if (isOpen(i)) await ctx.db.patch(i._id, { status: "closed", statusReason: reason });
+      await postMessage(ctx, i, { from: "system", body: `${client.name ?? "The client"} cancelled ${event.name}. Any open booking for it was cancelled.` });
+      const vendor = await ctx.db.get(i.vendorId);
+      if (vendor && !told.has(vendor.ownerId)) {
+        told.add(vendor.ownerId);
+        await notify(ctx, vendor.ownerId, {
+          title: `${client.name ?? "A client"} cancelled their event`,
+          body: event.name,
+          href: `/vendor/inquiries/${i._id}`,
+        });
+      }
     }
     await ctx.db.patch(eventId, { status: "cancelled" });
     return "cancelled" as const;

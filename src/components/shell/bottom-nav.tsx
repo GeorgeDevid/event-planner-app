@@ -1,14 +1,18 @@
 "use client";
 
+import { useQuery } from "convex/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
+import { api } from "../../../convex/_generated/api";
 
-export type NavItem = { href: string; label: string; icon: ReactNode };
+export type NavItem = { href: string; label: string; icon: ReactNode; unreadBadge?: boolean };
 
 /** Floating bottom tab bar; the active tab is a navy pill (design: Dusk & Gold). */
 export function BottomNav({ items, label }: { items: NavItem[]; label: string }) {
   const pathname = usePathname();
+  // Unread messages across my conversations (C-13 #2).
+  const unread = useQuery(api.inquiries.unreadCount, items.some((i) => i.unreadBadge) ? {} : "skip") ?? 0;
   return (
     <nav
       aria-label={label}
@@ -28,8 +32,18 @@ export function BottomNav({ items, label }: { items: NavItem[]; label: string })
                   active ? "bg-navy-900 text-white" : "text-ink-2"
                 }`}
               >
-                <span aria-hidden="true">{item.icon}</span>
-                <span className={active ? "" : "sr-only sm:not-sr-only"}>{item.label}</span>
+                <span aria-hidden="true" className="relative">
+                  {item.icon}
+                  {item.unreadBadge && unread > 0 ? (
+                    <span className="absolute -top-1.5 -right-2 flex min-w-4 items-center justify-center rounded-full bg-gold-500 px-1 text-[10px] font-bold text-navy-900">
+                      {unread > 9 ? "9+" : unread}
+                    </span>
+                  ) : null}
+                </span>
+                <span className={active ? "" : "sr-only sm:not-sr-only"}>
+                  {item.label}
+                  {item.unreadBadge && unread > 0 ? <span className="sr-only">, {unread} unread</span> : null}
+                </span>
               </Link>
             </li>
           );

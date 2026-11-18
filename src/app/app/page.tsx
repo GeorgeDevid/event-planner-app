@@ -4,7 +4,7 @@ import { useQuery } from "convex/react";
 import Link from "next/link";
 import { api } from "../../../convex/_generated/api";
 import { useMe } from "@/components/shell/role-gate";
-import { SignOutButton } from "@/components/shell/sign-out-button";
+import { NotificationBell } from "@/components/messaging/notifications";
 import { ArrowBadge } from "@/components/ui/button";
 import { formatIsoDate } from "@/lib/format";
 
@@ -38,7 +38,7 @@ export default function ClientHome() {
           <p className="text-xs text-ink-2">{greeting()}</p>
           <p className="text-[15px] font-bold">{me.name}</p>
         </div>
-        <SignOutButton className="bg-surface text-navy-900 shadow-card" />
+        <NotificationBell href="/app/notifications" />
       </header>
 
       <h1 className="text-[28px] leading-[34px] font-bold tracking-tight">

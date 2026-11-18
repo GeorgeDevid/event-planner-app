@@ -3,7 +3,7 @@ import { RoleGate } from "@/components/shell/role-gate";
 
 const NAV = [
   { href: "/vendor", label: "Dashboard", icon: icons.grid },
-  { href: "/vendor/inquiries", label: "Inquiries", icon: icons.inbox },
+  { href: "/vendor/inquiries", unreadBadge: true, label: "Inquiries", icon: icons.inbox },
   { href: "/vendor/calendar", label: "Calendar", icon: icons.calendar },
   { href: "/vendor/profile", label: "Profile", icon: icons.user },
 ];
