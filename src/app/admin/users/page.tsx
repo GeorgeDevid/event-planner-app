@@ -134,6 +134,8 @@ function UserDetail({ userId, onDeleted }: { userId: Id<"users">; onDeleted: () 
   const setSuspended = useMutation(api.adminUsers.setSuspended);
   const updateName = useMutation(api.adminUsers.updateName);
   const remove = useMutation(api.adminUsers.remove);
+  const sendReset = useMutation(api.account.adminSendReset);
+  const [notice, setNotice] = useState<string | null>(null);
   const [dialog, setDialog] = useState<"suspend" | "reactivate" | "delete" | null>(null);
   const [name, setName] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -194,11 +196,25 @@ function UserDetail({ userId, onDeleted }: { userId: Id<"users">; onDeleted: () 
             <Button type="button" variant="navy" onClick={() => setDialog("reactivate")}>Reactivate account</Button>
           )
         ) : null}
-        {can("users:resetPassword") ? (
-          <p className="rounded-2xl bg-surface-2 px-4 py-3 text-sm text-ink-2">
-            Password reset emails arrive with email sending in a later step.
-          </p>
+        {can("users:resetPassword") && user.status === "active" && user.email ? (
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={async () => {
+              setError(null);
+              setNotice(null);
+              try {
+                await sendReset({ userId });
+                setNotice(`Reset link sent to ${user.email}. It expires in 1 hour.`);
+              } catch (err) {
+                setError(errorMessage(err));
+              }
+            }}
+          >
+            Send password reset link
+          </Button>
         ) : null}
+        {notice ? <p role="status" className="rounded-2xl bg-success-bg px-4 py-3 text-sm font-medium text-success">{notice}</p> : null}
         {can("users:delete") && !self ? (
           <Button type="button" variant="ghost" className="text-danger" onClick={() => setDialog("delete")}>Delete account</Button>
         ) : null}

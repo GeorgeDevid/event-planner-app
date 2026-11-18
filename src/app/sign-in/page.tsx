@@ -11,6 +11,11 @@ export default function SignInPage() {
       <h2 className="text-[28px] leading-tight font-bold tracking-tight">Log in</h2>
       <p className="mt-1 text-sm text-ink-2">Pick up where you left off.</p>
       <SignInForm />
+      <p className="mt-4 text-center text-sm">
+        <Link href="/forgot-password" className="font-semibold text-gold-text underline-offset-4 hover:underline">
+          Forgot your password?
+        </Link>
+      </p>
       <p className="mt-6 text-center text-sm text-ink-2">
         New here?{" "}
         <Link href="/sign-up" className="font-semibold text-gold-text underline-offset-4 hover:underline">

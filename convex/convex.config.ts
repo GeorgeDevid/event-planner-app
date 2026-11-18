@@ -1,4 +1,5 @@
 import { defineApp } from "convex/server";
+import resend from "@convex-dev/resend/convex.config.js";
 import auth from "@convex-dev/auth/convex.config.js";
 import authPassword from "@convex-dev/auth/components/password/convex.config.js";
 import authUsername from "@convex-dev/auth/components/username/convex.config.js";
@@ -13,5 +14,6 @@ app.use(authPassword);
 app.use(authUsername);
 // Geospatial index for "vendors within X km" searches.
 app.use(geospatial);
+app.use(resend);
 
 export default app;

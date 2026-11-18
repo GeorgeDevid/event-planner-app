@@ -4,6 +4,7 @@ import { mutation, query, type MutationCtx } from "./_generated/server";
 import { audit, requirePermission } from "./lib/access";
 import type { Permission } from "./lib/permissions";
 import { vendorStatus } from "./lib/validators";
+import { notify } from "./lib/threads";
 import { syncVendorLocation } from "./vendorSearch";
 
 function invalid(message: string): never {
@@ -226,6 +227,14 @@ export const changeStatus = mutation({
       rejectionReason: change === "reject" ? text : change === "approve" ? undefined : vendor.rejectionReason,
     });
     await syncVendorLocation(ctx, vendorId);
+    const message = {
+      approve: { title: "Your business is approved", body: "Clients can now find you in search." },
+      reject: { title: "Changes needed before approval", body: text },
+      suspend: { title: "Your business has been suspended", body: text },
+      reactivate: { title: "Your business is active again", body: "Clients can find you in search again." },
+      deactivate: { title: "Your business has been deactivated", body: text },
+    }[change];
+    await notify(ctx, vendor.ownerId, { ...message, href: "/vendor" });
     await audit(ctx, {
       actor: admin,
       action: t.action,

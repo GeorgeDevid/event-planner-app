@@ -1,7 +1,7 @@
 import { convexAuthNextjsProxy, nextjsProxyRedirect } from "@/lib/convex-auth";
 
 const PROTECTED = ["/home", "/onboarding", "/app", "/vendor", "/admin"];
-const GUEST_ONLY = ["/sign-in", "/sign-up"];
+const GUEST_ONLY = ["/sign-in", "/sign-up", "/forgot-password"];
 
 const matches = (pathname: string, prefixes: string[]) =>
   prefixes.some((p) => pathname === p || pathname.startsWith(`${p}/`));

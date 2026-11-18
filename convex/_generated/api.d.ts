@@ -22,6 +22,7 @@ import type * as geocode from "../geocode.js";
 import type * as inquiries from "../inquiries.js";
 import type * as lib_access from "../lib/access.js";
 import type * as lib_dates from "../lib/dates.js";
+import type * as lib_email from "../lib/email.js";
 import type * as lib_permissions from "../lib/permissions.js";
 import type * as lib_sessions from "../lib/sessions.js";
 import type * as lib_threads from "../lib/threads.js";
@@ -55,6 +56,7 @@ declare const fullApi: ApiFromModules<{
   inquiries: typeof inquiries;
   "lib/access": typeof lib_access;
   "lib/dates": typeof lib_dates;
+  "lib/email": typeof lib_email;
   "lib/permissions": typeof lib_permissions;
   "lib/sessions": typeof lib_sessions;
   "lib/threads": typeof lib_threads;
@@ -99,4 +101,5 @@ export declare const components: {
   authPassword: import("@convex-dev/auth/components/password/_generated/component.js").ComponentApi<"authPassword">;
   authUsername: import("@convex-dev/auth/components/username/_generated/component.js").ComponentApi<"authUsername">;
   geospatial: import("@convex-dev/geospatial/_generated/component.js").ComponentApi<"geospatial">;
+  resend: import("@convex-dev/resend/_generated/component.js").ComponentApi<"resend">;
 };

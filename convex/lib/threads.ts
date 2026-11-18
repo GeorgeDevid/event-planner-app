@@ -2,6 +2,7 @@ import { ConvexError } from "convex/values";
 import type { Doc, Id } from "../_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "../_generated/server";
 import { requireUser } from "./access";
+import { sendEmail } from "./email";
 import { hasPermission } from "./permissions";
 
 type Ctx = QueryCtx | MutationCtx;
@@ -63,13 +64,22 @@ export async function postMessage(
   return id;
 }
 
-/** In-app notification. Email delivery will hook in here (Step 6). */
+/** In-app notification, also sent by email when the user has an address. */
 export async function notify(
   ctx: MutationCtx,
   userId: Id<"users">,
   n: { title: string; body?: string; href?: string },
 ) {
   await ctx.db.insert("notifications", { userId, ...n, createdAt: Date.now() });
+  const user = await ctx.db.get(userId);
+  if (user?.email && user.status === "active" && !user.deletedAt) {
+    await sendEmail(ctx, user.email, {
+      subject: n.title,
+      heading: n.title,
+      body: n.body,
+      cta: n.href ? { label: "Open Event Planner", href: n.href } : undefined,
+    });
+  }
 }
 
 /** Unread messages in a thread for one side. */

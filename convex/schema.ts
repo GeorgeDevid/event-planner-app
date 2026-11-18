@@ -251,6 +251,17 @@ export default defineSchema({
     createdAt: v.number(),
   }).index("by_user", ["userId", "createdAt"]),
 
+  // Password reset links (sent by email). Only a hash of the token is stored.
+  passwordResets: defineTable({
+    userId: v.id("users"),
+    tokenHash: v.string(),
+    expiresAt: v.number(),
+    usedAt: v.optional(v.number()),
+    createdAt: v.number(),
+  })
+    .index("by_token", ["tokenHash"])
+    .index("by_user", ["userId", "createdAt"]),
+
   // Reports for moderation (A-08, C-10 #5, C-13 #4).
   reports: defineTable({
     reporterId: v.id("users"),
