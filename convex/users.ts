@@ -210,3 +210,44 @@ export const grantAdminRole = internalMutation({
     return null;
   },
 });
+
+/**
+ * Operator-only password recovery, until email reset ships (A-03).
+ * Internal: it can't be called from the app, only with the deploy key, e.g.
+ * `npx convex run users:operatorResetPassword '{"email":"…","password":"…"}'`
+ * or from Functions in the Convex dashboard. Signs the user out everywhere.
+ */
+export const operatorResetPassword = internalMutation({
+  args: { email: v.string(), password: v.string() },
+  handler: async (ctx, { email, password }) => {
+    const normalized = email.trim().toLowerCase();
+    const userId = await ctx.runQuery(components.authUsername.public.getUserIdByUsername, {
+      username: normalized,
+    });
+    const id = userId ? ctx.db.normalizeId("users", userId) : null;
+    if (!id) throw new ConvexError({ code: "NOT_FOUND", message: `No account uses ${normalized}.` });
+    const result = await ctx.runMutation(components.authPassword.public._internal_dangerous_setPassword, {
+      userId: id,
+      password,
+      minimumLength: 10,
+    });
+    if (!result.success) {
+      throw new ConvexError({ code: "INVALID", message: `Password rejected: ${result.userError.error}` });
+    }
+    const sessions = await ctx.runQuery(components.auth.public.listSessions, { userId: id });
+    if (sessions.length > 0) {
+      await ctx.runMutation(components.auth.public.revokeSessions, {
+        sessionIds: sessions.map((s) => s.sessionId),
+      });
+    }
+    await audit(ctx, {
+      actor: null,
+      action: "user.password_reset_by_operator",
+      module: "users",
+      targetTable: "users",
+      targetId: id,
+      after: { sessionsRevoked: sessions.length },
+    });
+    return { ok: true, sessionsRevoked: sessions.length };
+  },
+});
