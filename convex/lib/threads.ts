@@ -1,9 +1,8 @@
 import { ConvexError } from "convex/values";
 import type { Doc, Id } from "../_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "../_generated/server";
-import { requireUser } from "./access";
+import { requireUser, userCan } from "./access";
 import { sendEmail } from "./email";
-import { hasPermission } from "./permissions";
 
 type Ctx = QueryCtx | MutationCtx;
 export type ThreadRole = "client" | "vendor" | "admin";
@@ -20,7 +19,7 @@ export async function loadThread(ctx: Ctx, inquiryId: Id<"inquiries">) {
   let role: ThreadRole | null = null;
   if (user.role === "client" && inquiry.clientId === user._id) role = "client";
   else if (user.role === "vendor" && vendor.ownerId === user._id) role = "vendor";
-  else if (user.role === "admin" && hasPermission(user.adminRole, "messages:view")) {
+  else if (user.role === "admin" && (await userCan(ctx, user, "messages:view"))) {
     // Moderators only read threads that someone reported (A-10).
     if (user.adminRole === "moderator") {
       const report = await ctx.db

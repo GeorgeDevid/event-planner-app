@@ -251,6 +251,17 @@ export default defineSchema({
     createdAt: v.number(),
   }).index("by_user", ["userId", "createdAt"]),
 
+  // Admin roles and their permissions (A-10). Built-in roles start from the
+  // default matrix in lib/permissions.ts and get a row here once edited.
+  roles: defineTable({
+    key: v.string(),
+    name: v.string(),
+    description: v.optional(v.string()),
+    builtIn: v.boolean(),
+    permissions: v.array(v.string()),
+    createdAt: v.number(),
+  }).index("by_key", ["key"]),
+
   // Password reset links (sent by email). Only a hash of the token is stored.
   passwordResets: defineTable({
     userId: v.id("users"),

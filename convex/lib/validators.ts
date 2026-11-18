@@ -7,13 +7,11 @@ export const userRole = v.union(
 );
 export type UserRole = Infer<typeof userRole>;
 
-export const adminRole = v.union(
-  v.literal("super_admin"),
-  v.literal("admin"),
-  v.literal("moderator"),
-  v.literal("support"),
-);
-export type AdminRole = Infer<typeof adminRole>;
+// The key of a role in the `roles` table (A-10). Built-in keys are
+// super_admin, admin, moderator and support; Super Admins can add more.
+export const adminRole = v.string();
+export type AdminRole = string;
+export const BUILT_IN_ROLES = ["super_admin", "admin", "moderator", "support"] as const;
 
 export const userStatus = v.union(v.literal("active"), v.literal("suspended"));
 

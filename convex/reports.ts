@@ -2,8 +2,7 @@ import { ConvexError, v } from "convex/values";
 import type { Doc } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 import { applySuspension } from "./adminUsers";
-import { audit, requirePermission, requireUser } from "./lib/access";
-import { hasPermission } from "./lib/permissions";
+import { audit, requirePermission, requireUser, userCan } from "./lib/access";
 import { loadThread, notify } from "./lib/threads";
 import { syncVendorLocation } from "./vendorSearch";
 
@@ -120,7 +119,7 @@ export const detail = query({
     const owner = vendor ? await ctx.db.get(vendor.ownerId) : null;
 
     let conversation = null;
-    if (r.inquiryId && hasPermission(admin.adminRole, "messages:view")) {
+    if (r.inquiryId && (await userCan(ctx, admin, "messages:view"))) {
       const inquiry = await ctx.db.get(r.inquiryId);
       if (inquiry) {
         const client = await ctx.db.get(inquiry.clientId);

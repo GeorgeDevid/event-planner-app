@@ -35,7 +35,7 @@ export type Permission = `${Module}:${Action}`;
 const ALL: Action[] = ["view", "create", "edit", "delete", "approve", "suspend"];
 
 /** Default permission matrix, as agreed in story A-10. */
-const MATRIX: Record<AdminRole, Partial<Record<Module, Action[]>>> = {
+export const DEFAULT_MATRIX: Record<string, Partial<Record<Module, Action[]>>> = {
   super_admin: {
     users: [...ALL, "resetPassword"],
     vendors: ALL,
@@ -82,18 +82,31 @@ const MATRIX: Record<AdminRole, Partial<Record<Module, Action[]>>> = {
   },
 };
 
-export function hasPermission(
-  role: AdminRole | undefined,
-  permission: Permission,
-): boolean {
-  if (!role) return false;
-  const [module, action] = permission.split(":") as [Module, Action];
-  return MATRIX[role][module]?.includes(action) ?? false;
-}
-
-export function permissionsFor(role: AdminRole | undefined): Permission[] {
-  if (!role) return [];
-  return Object.entries(MATRIX[role]).flatMap(([module, actions]) =>
+/** Default permissions of a built-in role (empty for unknown keys). */
+export function defaultPermissions(role: AdminRole | undefined): Permission[] {
+  if (!role || !DEFAULT_MATRIX[role]) return [];
+  return Object.entries(DEFAULT_MATRIX[role]).flatMap(([module, actions]) =>
     (actions ?? []).map((action) => `${module}:${action}` as Permission),
   );
 }
+
+/** Which actions make sense for each module, for the roles editor. */
+export const APPLICABLE: Record<Module, Action[]> = {
+  users: ["view", "edit", "delete", "suspend", "resetPassword"],
+  vendors: ["view", "edit", "delete", "approve", "suspend"],
+  categories: ["view", "create", "edit", "delete"],
+  eventTypes: ["view", "create", "edit", "delete"],
+  events: ["view", "edit"],
+  bookings: ["view", "edit"],
+  messages: ["view"],
+  reports: ["view", "edit"],
+  content: ["view", "create", "edit", "delete"],
+  roles: ["view", "create", "edit", "delete"],
+  auditLog: ["view"],
+};
+
+export const ALL_PERMISSIONS: Permission[] = (Object.keys(APPLICABLE) as Module[]).flatMap((m) =>
+  APPLICABLE[m].map((a) => `${m}:${a}` as Permission),
+);
+
+export const isPermission = (p: string): p is Permission => (ALL_PERMISSIONS as string[]).includes(p);

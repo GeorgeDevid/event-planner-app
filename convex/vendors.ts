@@ -2,7 +2,8 @@ import { torontoToday } from "./lib/dates";
 import { ConvexError, v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
 import { mutation, query, type QueryCtx } from "./_generated/server";
-import { audit, getCurrentUser } from "./lib/access";
+import { audit, getCurrentUser, userCan } from "./lib/access";
+import { notify } from "./lib/threads";
 import {
   checkUpload,
   DOCUMENT_TYPES,
@@ -262,6 +263,17 @@ export const submitForApproval = mutation({
       before: { status: vendor.status },
       after: { status: "pending" },
     });
+    // V-01 #2: tell the admins who can approve vendors.
+    const admins = await ctx.db.query("users").withIndex("by_role", (q) => q.eq("role", "admin")).collect();
+    for (const a of admins) {
+      if (a.status === "active" && !a.deletedAt && (await userCan(ctx, a, "vendors:approve"))) {
+        await notify(ctx, a._id, {
+          title: `${vendor.companyName} is waiting for approval`,
+          body: vendor.status === "rejected" ? "They made changes and resubmitted." : "A new business was submitted for review.",
+          href: "/admin/vendors",
+        });
+      }
+    }
   },
 });
 

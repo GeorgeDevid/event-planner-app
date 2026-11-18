@@ -92,7 +92,7 @@ export default function AdminUsers() {
                     </div>
                   </div>
                 </td>
-                <td className={td}>{u.role === "admin" ? ADMIN_ROLE[u.adminRole ?? "admin"] : ROLE_LABEL[u.role]}</td>
+                <td className={td}>{u.role === "admin" ? (ADMIN_ROLE[u.adminRole ?? "admin"] ?? u.adminRole) : ROLE_LABEL[u.role]}</td>
                 <td className={td}>
                   {u.status === "active" ? <StatusPill tone="success">Active</StatusPill> : <StatusPill tone="muted">Suspended</StatusPill>}
                 </td>
@@ -159,7 +159,7 @@ function UserDetail({ userId, onDeleted }: { userId: Id<"users">; onDeleted: () 
       {error ? <FormAlert>{error}</FormAlert> : null}
 
       <dl className="grid grid-cols-2 gap-4 text-sm">
-        <div><dt className="text-xs font-semibold text-ink-2">Role</dt><dd>{user.role === "admin" ? ADMIN_ROLE[user.adminRole ?? "admin"] : ROLE_LABEL[user.role]}</dd></div>
+        <div><dt className="text-xs font-semibold text-ink-2">Role</dt><dd>{user.role === "admin" ? (ADMIN_ROLE[user.adminRole ?? "admin"] ?? user.adminRole) : ROLE_LABEL[user.role]}</dd></div>
         <div><dt className="text-xs font-semibold text-ink-2">Status</dt><dd>{user.status === "active" ? "Active" : "Suspended"}</dd></div>
         <div><dt className="text-xs font-semibold text-ink-2">Joined</dt><dd>{formatDateTime(user.createdAt)}</dd></div>
         <div><dt className="text-xs font-semibold text-ink-2">Last active</dt><dd>{user.lastSeenAt ? formatDateTime(user.lastSeenAt) : "—"}</dd></div>
@@ -187,6 +187,8 @@ function UserDetail({ userId, onDeleted }: { userId: Id<"users">; onDeleted: () 
           <Button type="submit" variant="secondary" disabled={name === null || name === user.name}>Save</Button>
         </form>
       ) : null}
+
+      {can("roles:edit") && !self && user.role !== "vendor" ? <RoleAssign userId={userId} current={user.role === "admin" ? (user.adminRole ?? null) : null} /> : null}
 
       <div className="flex flex-col gap-2">
         {can("users:suspend") && !self ? (
@@ -266,5 +268,43 @@ function UserDetail({ userId, onDeleted }: { userId: Id<"users">; onDeleted: () 
         }}
       />
     </div>
+  );
+}
+
+/** A-01 #2, A-10 #3: give or change admin access (needs Roles: Edit). */
+function RoleAssign({ userId, current }: { userId: Id<"users">; current: string | null }) {
+  const options = useQuery(api.adminRoles.options);
+  const setRole = useMutation(api.adminRoles.setUserRole);
+  const [value, setValue] = useState(current ?? "");
+  const [error, setError] = useState<string | null>(null);
+  const [saved, setSaved] = useState(false);
+  return (
+    <form
+      className="flex flex-col gap-2 rounded-2xl bg-surface-2 p-4"
+      onSubmit={async (e) => {
+        e.preventDefault();
+        setError(null);
+        setSaved(false);
+        try {
+          await setRole({ userId, role: value || null });
+          setSaved(true);
+        } catch (err) {
+          setError(errorMessage(err));
+        }
+      }}
+    >
+      <label htmlFor="admin-role" className="text-xs font-semibold text-ink-2">Admin access</label>
+      <div className="flex gap-2">
+        <select id="admin-role" value={value} onChange={(e) => setValue(e.target.value)} className="h-11 flex-1 rounded-full border border-control bg-surface px-4 text-sm">
+          <option value="">No admin access (client)</option>
+          {(options ?? []).map((o) => (
+            <option key={o.key} value={o.key}>{o.name}</option>
+          ))}
+        </select>
+        <Button type="submit" variant="secondary" className="min-h-11 px-4 text-sm" disabled={value === (current ?? "")}>Save</Button>
+      </div>
+      {error ? <p className="text-[13px] font-medium text-danger">{error}</p> : null}
+      {saved ? <p role="status" className="text-[13px] text-success">Saved. It applies on their next action.</p> : null}
+    </form>
   );
 }

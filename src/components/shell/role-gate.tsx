@@ -2,6 +2,7 @@
 
 import { useQuery } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, type ReactNode } from "react";
 import { api } from "../../../convex/_generated/api";
@@ -41,12 +42,26 @@ export function RoleGate({
   const router = useRouter();
 
   const allowed = me && me.onboarded && me.role === role;
+  // A-01 #1: signed-in people who aren't admins get a 403, not a redirect.
+  const forbidden = role === "admin" && !!me && me.onboarded && me.role !== "admin";
 
   useEffect(() => {
-    if (me === undefined || allowed) return;
+    if (me === undefined || allowed || forbidden) return;
     router.replace(me === null ? "/sign-in" : homeFor(me));
-  }, [me, allowed, router]);
+  }, [me, allowed, forbidden, router]);
 
+  if (forbidden) {
+    return (
+      <main className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-cream p-6 text-center">
+        <p className="font-display text-[56px] leading-none font-bold text-gold-display">403</p>
+        <h1 className="text-[22px] font-bold">You don&apos;t have access to the admin portal</h1>
+        <p className="max-w-sm text-sm text-ink-2">This area is only for Event Planner staff. If you think you should have access, ask a Super Admin.</p>
+        <Link href={homeFor(me)} className="mt-2 inline-flex min-h-11 items-center rounded-full bg-navy-900 px-6 text-[15px] font-semibold text-white">
+          Go to my home
+        </Link>
+      </main>
+    );
+  }
   if (!allowed) return <FullPageLoader />;
   return <MeContext.Provider value={me}>{children}</MeContext.Provider>;
 }

@@ -1,7 +1,7 @@
 import { ConvexError, v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
 import { mutation, query, type MutationCtx } from "./_generated/server";
-import { audit, requireRole, requireUser } from "./lib/access";
+import { audit, requireRole, requireUser, userCan } from "./lib/access";
 import { isIsoDate, torontoToday } from "./lib/dates";
 import { isOpen, notify, postMessage } from "./lib/threads";
 import { requireMyVendor } from "./lib/vendorAccess";
@@ -313,7 +313,7 @@ export const cancel = mutation({
       // V-07 #4: admins hear about vendor cancellations.
       const admins = await ctx.db.query("users").withIndex("by_role", (q) => q.eq("role", "admin")).collect();
       for (const a of admins) {
-        if (a.status === "active" && (a.adminRole === "super_admin" || a.adminRole === "admin")) {
+        if (a.status === "active" && !a.deletedAt && (await userCan(ctx, a, "bookings:edit"))) {
           await notify(ctx, a._id, {
             title: `${vendor.companyName} cancelled an accepted booking`,
             body: `${niceDate(booking.serviceDate)} · ${text}`,

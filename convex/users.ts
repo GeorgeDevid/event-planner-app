@@ -5,8 +5,7 @@ import {
   mutation,
   query,
 } from "./_generated/server";
-import { audit, getCurrentUser, requireUser } from "./lib/access";
-import { permissionsFor } from "./lib/permissions";
+import { audit, getCurrentUser, permissionsOf, requireUser } from "./lib/access";
 import { adminRole } from "./lib/validators";
 
 /**
@@ -94,7 +93,7 @@ export const me = query({
             status: vendor.status,
           }
         : null,
-      permissions: permissionsFor(user.adminRole),
+      permissions: [...(await permissionsOf(ctx, user))],
     };
   },
 });
