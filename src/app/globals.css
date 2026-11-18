@@ -1,26 +1,85 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+ * Dusk & Gold design tokens.
+ * Text colours were checked for WCAG AA contrast on their intended backgrounds:
+ * - gold-text (#8A6326) is the only gold for small text on light backgrounds.
+ * - gold-display (#A9783A) is for bold display text 24px and up only.
+ * - Never put white text on gold; gold buttons use navy text.
+ */
+@theme {
+  --color-cream: #f6f3ee;
+  --color-surface: #ffffff;
+  --color-surface-2: #efeae2;
+  --color-line: #e7e0d5;
+  --color-control: #8c8577;
+
+  --color-navy-900: #0e1a2f;
+  --color-navy-700: #1c2b47;
+  --color-on-navy-2: #b7bcc8;
+
+  --color-gold-300: #e3be84;
+  --color-gold-500: #d4a96a;
+  --color-gold-600: #c9995a;
+  --color-gold-text: #8a6326;
+  --color-gold-display: #a9783a;
+
+  --color-ink: #0e1a2f;
+  --color-ink-2: #5f6475;
+
+  --color-danger: #9b1c1c;
+  --color-danger-bg: #fbe1e1;
+  --color-pending: #8a5a00;
+  --color-pending-bg: #fbefd5;
+  --color-success: #1f6b3a;
+  --color-success-bg: #ddf2e3;
+  --color-info: #1e3a8a;
+  --color-info-bg: #e0e8fa;
+  --color-muted: #4a4f5c;
+  --color-muted-bg: #eceae6;
+
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-cormorant), Georgia, serif;
+
+  --radius-card: 20px;
+  --radius-hero: 24px;
+  --radius-sheet: 28px;
+
+  --shadow-card: 0 8px 24px rgba(14, 26, 47, 0.08);
+  --shadow-float: 0 12px 32px rgba(14, 26, 47, 0.14);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  html {
+    background: var(--color-cream);
+    color: var(--color-ink);
+  }
+  body {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  :focus-visible {
+    outline: 3px solid var(--color-gold-text);
+    outline-offset: 2px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@utility bg-gold-cta {
+  background-image: linear-gradient(
+    135deg,
+    var(--color-gold-300) 0%,
+    var(--color-gold-500) 55%,
+    var(--color-gold-600) 100%
+  );
+}
+
+/* Stand-in for real photography until images are uploaded. */
+@utility bg-dusk {
+  background-image: linear-gradient(
+    160deg,
+    #2b3a5c 0%,
+    #6b6f86 45%,
+    #d9a877 85%,
+    #f2d3a6 100%
+  );
 }
