@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { RememberNext } from "@/components/auth/remember-next";
 import { AuthShell } from "@/components/auth/auth-shell";
+import { GoogleSignIn } from "@/components/auth/google-button";
 import { SignUpForm } from "./sign-up-form";
 
 export const metadata: Metadata = { title: "Create your account" };
@@ -17,6 +18,7 @@ export default function SignUpPage() {
       <Suspense fallback={null}>
         <RememberNext />
       </Suspense>
+      <GoogleSignIn label="Sign up with Google" />
       <SignUpForm />
       <p className="mt-4 text-center text-xs text-ink-2">
         By creating an account you agree to our{" "}

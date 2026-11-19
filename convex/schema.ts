@@ -36,6 +36,8 @@ export default defineSchema({
     deletedAt: v.optional(v.number()),
     // Versions of the Terms and Privacy Policy this person accepted (A-09 #3).
     acceptedTermsVersion: v.optional(v.number()),
+    // True for accounts made with Google that haven't added a password yet.
+    noPassword: v.optional(v.boolean()),
     // Set when the person clicks the link in the verification email (C-01 #1).
     emailVerifiedAt: v.optional(v.number()),
     acceptedPrivacyVersion: v.optional(v.number()),

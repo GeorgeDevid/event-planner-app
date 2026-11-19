@@ -72,11 +72,25 @@ export const requestPasswordReset = mutation({
     }
     const userId = await ctx.runQuery(components.authUsername.public.getUserIdByUsername, { username: normalized });
     const id = userId ? ctx.db.normalizeId("users", userId) : null;
-    const user = id ? await ctx.db.get(id) : null;
+    // Accounts made with Google have no username yet; a reset adds a password to them.
+    const user = id
+      ? await ctx.db.get(id)
+      : (await ctx.db.query("users").withIndex("by_email", (q) => q.eq("email", normalized)).collect()).find((u) => !u.deletedAt) ?? null;
     if (!user || user.status !== "active" || user.deletedAt) return { ok: true };
 
     await issueReset(ctx, user);
     return { ok: true };
+  },
+});
+
+/** For accounts made with Google: email a link to add a password (same link as a reset). */
+export const requestPasswordSetup = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const user = await requireUser(ctx);
+    if (!user.email) throw new ConvexError({ code: "INVALID", message: "Your account has no email address." });
+    await issueReset(ctx, user);
+    return { email: user.email };
   },
 });
 
@@ -104,6 +118,11 @@ export const resetPassword = mutation({
         message: MESSAGES[result.userError.error] ?? "Choose a different password.",
       });
     }
+    // An account made with Google gets its email as the username, so the new password works at Log in.
+    if (user.email && !(await ctx.runQuery(components.authUsername.public.getUsername, { userId: user._id }))) {
+      await ctx.runMutation(components.authUsername.public.setUsername, { userId: user._id, username: user.email });
+    }
+    if (user.noPassword) await ctx.db.patch(user._id, { noPassword: undefined });
     await ctx.db.patch(reset._id, { usedAt: Date.now() });
     // Sign out everywhere: whoever had the old password is logged out.
     const sessions = await ctx.runQuery(components.auth.public.listSessions, { userId: user._id });

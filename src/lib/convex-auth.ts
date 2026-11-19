@@ -34,6 +34,7 @@ export const authServer = setupConvexAuthServer({
   signIn: [
     api.auth.signInWithUsernamePassword,
     api.auth.signUpWithUsernamePassword,
+    api.auth.completeSignInWithGoogle,
   ],
   cookieOptions: { secure },
 });

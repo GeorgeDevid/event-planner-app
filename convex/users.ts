@@ -1,4 +1,5 @@
 import { ConvexError, v } from "convex/values";
+import { vGoogleProfile } from "@convex-dev/auth/methods/google/server";
 import { components } from "./_generated/api";
 import {
   internalMutation,
@@ -67,6 +68,88 @@ export const onSignIn = internalMutation({
   },
 });
 
+const vGoogleMethod = v.object({ name: v.literal("google"), profile: vGoogleProfile });
+
+/**
+ * Convex Auth `createUser` callback for "Continue with Google". A Google
+ * account whose verified email matches an existing account with a confirmed
+ * email signs in to that account. If the existing account never confirmed its
+ * email we refuse, so nobody can pre-register someone else's address and
+ * later take over their Google sign-in. Otherwise a new client account is
+ * made and goes through onboarding like an email sign-up.
+ */
+export const createUserGoogle = internalMutation({
+  args: { method: vGoogleMethod },
+  returns: v.id("users"),
+  handler: async (ctx, { method: { profile } }) => {
+    const email = profile.email?.trim().toLowerCase();
+    const taken = () =>
+      new ConvexError({
+        code: "ACCOUNT_EXISTS",
+        message:
+          "An account already uses this email. Log in with your email and password, confirm your email from the link we sent you, then you can use Google too.",
+      });
+    if (email) {
+      // An account can be found by its email, or (before onboarding) only by
+      // the email it signed up with as its username.
+      const byUsername = await ctx.runQuery(components.authUsername.public.getUserIdByUsername, { username: email });
+      const usernameId = byUsername ? ctx.db.normalizeId("users", byUsername) : null;
+      const existing =
+        (usernameId ? await ctx.db.get(usernameId) : null) ??
+        (await ctx.db.query("users").withIndex("by_email", (q) => q.eq("email", email)).collect()).find((u) => !u.deletedAt) ??
+        null;
+      if (existing && !existing.deletedAt) {
+        if (profile.emailVerified && existing.emailVerifiedAt) return existing._id;
+        throw taken();
+      }
+    }
+    const userId = await ctx.db.insert("users", {
+      role: "client",
+      status: "active",
+      onboarded: false,
+      email,
+      name: profile.name?.trim().slice(0, 80) || undefined,
+      emailVerifiedAt: email && profile.emailVerified ? Date.now() : undefined,
+      noPassword: true,
+      createdAt: Date.now(),
+    });
+    // Reserve the email as this account's username, so an email sign-up with
+    // the same address is refused ("already uses this email") instead of
+    // making a second account, and a password reset can add a password later.
+    if (email) {
+      const set = await ctx.runMutation(components.authUsername.public.setUsername, { userId, username: email });
+      if (!set.success) throw taken();
+    }
+    return userId;
+  },
+});
+
+/** Runs on every Google sign-in: blocks suspended accounts and confirms the email Google vouched for. */
+export const onSignInGoogle = internalMutation({
+  args: { method: vGoogleMethod, userId: v.id("users") },
+  returns: v.null(),
+  handler: async (ctx, { method: { profile }, userId }) => {
+    const user = await ctx.db.get(userId);
+    if (!user || user.deletedAt) {
+      throw new ConvexError({ code: "NOT_FOUND", message: "Account not found." });
+    }
+    if (user.status === "suspended") {
+      throw new ConvexError({
+        code: "SUSPENDED",
+        message: "This account has been suspended. Contact support if you think this is a mistake.",
+      });
+    }
+    const email = profile.email?.trim().toLowerCase();
+    const patch: Partial<typeof user> = { lastSeenAt: Date.now() };
+    if (!user.email && email) patch.email = email;
+    if (!user.emailVerifiedAt && profile.emailVerified && email && (user.email ?? email) === email) {
+      patch.emailVerifiedAt = Date.now();
+    }
+    await ctx.db.patch(userId, patch);
+    return null;
+  },
+});
+
 /** The signed-in user, their vendor business (if any) and admin permissions. */
 export const me = query({
   args: {},
@@ -87,6 +170,8 @@ export const me = query({
       role: user.role,
       adminRole: user.adminRole ?? null,
       onboarded: user.onboarded,
+      // False for accounts made with Google that never set a password.
+      hasPassword: !user.noPassword,
       vendor: vendor
         ? {
             _id: vendor._id,

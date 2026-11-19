@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { RememberNext } from "@/components/auth/remember-next";
 import { AuthShell } from "@/components/auth/auth-shell";
+import { GoogleSignIn } from "@/components/auth/google-button";
 import { Suspense } from "react";
 import { IdleNotice } from "./idle-notice";
 import { SignInForm } from "./sign-in-form";
@@ -19,6 +20,7 @@ export default function SignInPage() {
       <Suspense fallback={null}>
         <RememberNext />
       </Suspense>
+      <GoogleSignIn />
       <SignInForm />
       <p className="mt-4 text-center text-sm">
         <Link href="/forgot-password" className="font-semibold text-gold-text underline-offset-4 hover:underline">

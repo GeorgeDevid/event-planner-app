@@ -3,6 +3,7 @@
 import { useMutation } from "convex/react";
 import { useState } from "react";
 import { api } from "../../../convex/_generated/api";
+import { useMe } from "@/components/shell/role-gate";
 import { Button } from "@/components/ui/button";
 import { FormAlert, TextField } from "@/components/ui/field";
 import { errorField, errorMessage } from "@/lib/errors";
@@ -16,6 +17,9 @@ export function ChangePasswordForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [done, setDone] = useState(false);
   const [pending, setPending] = useState(false);
+  const me = useMe();
+
+  if (!me.hasPassword) return <PasswordSetup />;
 
   return (
     <form
@@ -56,5 +60,41 @@ export function ChangePasswordForm() {
       <TextField id="pw-confirm" label="Confirm new password" type="password" autoComplete="new-password" value={confirm} error={errors.confirm} onChange={(e) => setConfirm(e.target.value)} />
       <Button type="submit" disabled={pending} className="self-start">{pending ? "Saving…" : "Change password"}</Button>
     </form>
+  );
+}
+
+/** Accounts made with Google have no password; offer to email a link to add one. */
+function PasswordSetup() {
+  const request = useMutation(api.account.requestPasswordSetup);
+  const [sentTo, setSentTo] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [pending, setPending] = useState(false);
+  return (
+    <div className="flex flex-col gap-3">
+      <p className="text-sm text-ink-2">
+        You sign in with Google, so there&apos;s no password to change. You can add one to also log in with your email.
+      </p>
+      {sentTo ? <FormAlert tone="info">We sent a link to {sentTo}. It works for one hour.</FormAlert> : null}
+      {error ? <FormAlert>{error}</FormAlert> : null}
+      <Button
+        type="button"
+        variant="secondary"
+        className="self-start"
+        disabled={pending}
+        onClick={async () => {
+          setPending(true);
+          setError(null);
+          try {
+            setSentTo((await request({})).email);
+          } catch (err) {
+            setError(errorMessage(err));
+          } finally {
+            setPending(false);
+          }
+        }}
+      >
+        {pending ? "Sending…" : "Email me a link to add a password"}
+      </Button>
+    </div>
   );
 }

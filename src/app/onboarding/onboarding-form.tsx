@@ -32,7 +32,8 @@ export function OnboardingForm() {
   const router = useRouter();
 
   const [accountType, setAccountType] = useState<AccountType>("client");
-  const [name, setName] = useState("");
+  // null until edited, so a name Google gave us shows pre-filled.
+  const [nameInput, setName] = useState<string | null>(null);
   const [companyName, setCompanyName] = useState("");
   const [phone, setPhone] = useState("");
   const [pending, setPending] = useState(false);
@@ -45,6 +46,7 @@ export function OnboardingForm() {
   }, [me, router]);
 
   if (!me || me.onboarded) return <FullPageLoader />;
+  const name = nameInput ?? me.name ?? "";
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
