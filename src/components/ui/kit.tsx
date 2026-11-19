@@ -1,6 +1,7 @@
 "use client";
 
 import { useLingering } from "@/lib/use-lingering";
+import { useLiquidIndicator } from "@/lib/use-liquid-indicator";
 import Link from "next/link";
 import { useEffect, useRef, type ComponentProps, type ReactNode } from "react";
 
@@ -114,8 +115,10 @@ export function Segmented<T extends string>({
   options: { value: T; label: string }[];
   label: string;
 }) {
+  const { containerRef, indicatorRef } = useLiquidIndicator<HTMLDivElement>(value, '[aria-checked="true"]');
   return (
-    <div role="radiogroup" aria-label={label} className="flex gap-1 rounded-full bg-surface-2 p-1">
+    <div ref={containerRef} role="radiogroup" aria-label={label} className="relative flex gap-1 rounded-full bg-surface-2 p-1">
+      <span ref={indicatorRef} aria-hidden="true" className="liquid-indicator bg-navy-900" />
       {options.map((o) => (
         <button
           key={o.value}
@@ -123,8 +126,8 @@ export function Segmented<T extends string>({
           role="radio"
           aria-checked={value === o.value}
           onClick={() => onChange(o.value)}
-          className={`min-h-10 flex-1 rounded-full px-3 text-sm font-semibold transition-colors ${
-            value === o.value ? "bg-navy-900 text-white" : "text-ink-2"
+          className={`press relative min-h-10 flex-1 rounded-full px-3 text-sm font-semibold duration-300 ${
+            value === o.value ? "text-white" : "text-ink-2"
           }`}
         >
           {o.label}

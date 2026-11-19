@@ -3,15 +3,27 @@
 import { useQuery } from "convex/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { ReactNode } from "react";
+import { useState, type CSSProperties, type ReactNode } from "react";
 import { api } from "../../../convex/_generated/api";
-import { BottomNav, type NavItem } from "@/components/shell/bottom-nav";
+import { activeIndex, BottomNav, type NavItem } from "@/components/shell/bottom-nav";
 import { SignOutButton } from "@/components/shell/sign-out-button";
 import { useMe } from "@/components/shell/role-gate";
 import { Logo } from "@/components/ui/logo";
+import { useLiquidIndicator } from "@/lib/use-liquid-indicator";
 
-function isActive(pathname: string, items: NavItem[], href: string) {
-  return pathname === href || (href !== items[0].href && pathname.startsWith(href));
+/**
+ * Which way the content should slide when switching tabs: from the right when
+ * moving to a tab further along, from the left when going back, and a plain
+ * rise for pages within the same tab.
+ */
+function useTabDirection(index: number) {
+  const [prev, setPrev] = useState(index);
+  const [dir, setDir] = useState(0);
+  if (index !== prev) {
+    setPrev(index);
+    setDir(index >= 0 && prev >= 0 ? Math.sign(index - prev) : 0);
+  }
+  return dir;
 }
 
 /**
@@ -31,10 +43,14 @@ export function AppShell({
   logoSuffix?: string;
   children: ReactNode;
 }) {
+  const pathname = usePathname();
+  const dir = useTabDirection(activeIndex(pathname, items));
+  // Read by the page-in animation in each route template.
+  const slide = { "--page-dx": `${dir * 28}px`, "--page-dy": dir ? "0px" : "8px" } as CSSProperties;
   return (
     <div className="min-h-dvh [--dock:6rem] lg:flex lg:[--dock:1.5rem] lg:[--side:16rem]">
       <SideNav items={items} label={label} logoSuffix={logoSuffix} />
-      <main className="mx-auto min-h-dvh w-full max-w-md px-5 pt-6 pb-28 sm:max-w-2xl lg:max-w-4xl lg:px-10 lg:pt-10 lg:pb-16">
+      <main style={slide} className="mx-auto min-h-dvh w-full max-w-md px-5 pt-6 pb-28 sm:max-w-2xl lg:max-w-4xl lg:px-10 lg:pt-10 lg:pb-16">
         {children}
       </main>
       <div className="lg:hidden">
@@ -46,6 +62,8 @@ export function AppShell({
 
 function SideNav({ items, label, logoSuffix }: { items: NavItem[]; label: string; logoSuffix?: string }) {
   const pathname = usePathname();
+  const current = activeIndex(pathname, items);
+  const { containerRef, indicatorRef } = useLiquidIndicator<HTMLUListElement>(current, '[aria-current="page"]');
   const me = useMe();
   const unread = useQuery(api.inquiries.unreadCount, items.some((i) => i.unreadBadge) ? {} : "skip") ?? 0;
   return (
@@ -55,16 +73,17 @@ function SideNav({ items, label, logoSuffix }: { items: NavItem[]; label: string
         {logoSuffix ? <p className="mt-1.5 text-[11px] font-semibold tracking-[0.18em] text-gold-300 uppercase">{logoSuffix}</p> : null}
       </div>
       <nav aria-label={label} className="mt-10">
-        <ul className="flex flex-col gap-1">
-          {items.map((item) => {
-            const active = isActive(pathname, items, item.href);
+        <ul ref={containerRef} className="relative flex flex-col gap-1">
+          <span ref={indicatorRef} aria-hidden="true" className="liquid-indicator bg-gold-cta" />
+          {items.map((item, i) => {
+            const active = i === current;
             return (
-              <li key={item.href}>
+              <li key={item.href} className="relative">
                 <Link
                   href={item.href}
                   aria-current={active ? "page" : undefined}
-                  className={`press flex min-h-11 items-center gap-3 rounded-full px-4 text-sm font-semibold ${
-                    active ? "bg-gold-cta text-navy-900" : "text-on-navy-2 hover:bg-white/10 hover:text-white"
+                  className={`press flex min-h-11 items-center gap-3 rounded-full px-4 text-sm font-semibold duration-300 ${
+                    active ? "text-navy-900" : "text-on-navy-2 hover:bg-white/10 hover:text-white"
                   }`}
                 >
                   <span aria-hidden="true">{item.icon}</span>

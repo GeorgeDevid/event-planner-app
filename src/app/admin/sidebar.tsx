@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { useLiquidIndicator } from "@/lib/use-liquid-indicator";
 import { useMe } from "@/components/shell/role-gate";
 import { SignOutButton } from "@/components/shell/sign-out-button";
 import type { Permission } from "../../../convex/lib/permissions";
@@ -55,6 +56,7 @@ export function AdminSidebar() {
   const can = (p?: Permission) => !p || me.permissions.includes(p);
 
   const [open, setOpen] = useState(false);
+  const { containerRef, indicatorRef } = useLiquidIndicator<HTMLElement>(pathname, '[aria-current="page"]');
 
   return (
     <aside className="sticky top-0 z-30 flex w-full flex-col gap-6 bg-navy-900 px-5 py-4 text-white lg:h-dvh lg:w-60 lg:flex-[0_0_240px] lg:overflow-y-auto lg:p-6">
@@ -76,12 +78,13 @@ export function AdminSidebar() {
         </button>
       </div>
       <div id="admin-menu" className={`${open ? "flex" : "hidden"} max-h-[calc(100dvh-5rem)] flex-col gap-6 overflow-y-auto lg:flex lg:max-h-none lg:flex-1 lg:overflow-visible`}>
-      <nav aria-label="Admin" className="flex flex-col gap-5">
+      <nav ref={containerRef} aria-label="Admin" className="relative flex flex-col gap-5">
+        <span ref={indicatorRef} aria-hidden="true" className="liquid-indicator bg-navy-700" />
         {GROUPS.map((group) => {
           const items = group.items.filter((i) => can(i.permission));
           if (items.length === 0) return null;
           return (
-            <div key={group.title} className="flex flex-col gap-1">
+            <div key={group.title} className="relative flex flex-col gap-1">
               <p className="px-3 text-xs font-semibold text-on-navy-2">{group.title}</p>
               {items.map((item) => {
                 const active = pathname === item.href;
@@ -91,12 +94,11 @@ export function AdminSidebar() {
                     href={item.href}
                     onClick={() => setOpen(false)}
                     aria-current={active ? "page" : undefined}
-                    className={`flex min-h-11 items-center rounded-full px-3 text-sm font-medium ${
-                      active
-                        ? "bg-navy-700 text-gold-300 shadow-[inset_3px_0_0_var(--color-gold-500)]"
-                        : "text-white hover:bg-navy-700"
+                    className={`press flex min-h-11 items-center gap-2 rounded-full px-3 text-sm font-medium duration-300 ${
+                      active ? "text-gold-300" : "text-white hover:bg-navy-700/60"
                     }`}
                   >
+                    <span aria-hidden="true" className={`size-1.5 rounded-full bg-gold-500 transition-opacity duration-300 ${active ? "opacity-100" : "opacity-0"}`} />
                     {item.label}
                   </Link>
                 );

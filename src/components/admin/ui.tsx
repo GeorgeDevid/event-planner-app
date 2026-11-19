@@ -1,6 +1,7 @@
 "use client";
 
 import { useLingering } from "@/lib/use-lingering";
+import { useLiquidIndicator } from "@/lib/use-liquid-indicator";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { FormAlert } from "@/components/ui/field";
@@ -98,8 +99,11 @@ export function Tabs<T extends string>({
   tabs: { value: T; label: string; count?: number }[];
   label: string;
 }) {
+  // The navy pill flows over the white chips to the selected tab.
+  const { containerRef, indicatorRef } = useLiquidIndicator<HTMLDivElement>(value, '[aria-selected="true"]');
   return (
-    <div role="tablist" aria-label={label} className="flex flex-wrap gap-2">
+    <div ref={containerRef} role="tablist" aria-label={label} className="relative flex flex-wrap gap-2">
+      <span ref={indicatorRef} aria-hidden="true" className="liquid-indicator z-[1] bg-navy-900" />
       {tabs.map((t) => {
         const active = t.value === value;
         return (
@@ -109,8 +113,8 @@ export function Tabs<T extends string>({
             type="button"
             aria-selected={active}
             onClick={() => onChange(t.value)}
-            className={`press flex min-h-11 items-center gap-2 rounded-full px-4 text-sm font-semibold ${
-              active ? "bg-navy-900 text-white" : "bg-surface text-navy-900 shadow-card hover:bg-surface-2"
+            className={`press relative flex min-h-11 items-center gap-2 rounded-full px-4 text-sm font-semibold duration-300 ${
+              active ? "z-[2] text-white" : "z-0 bg-surface text-navy-900 shadow-card hover:bg-surface-2"
             }`}
           >
             {t.label}
