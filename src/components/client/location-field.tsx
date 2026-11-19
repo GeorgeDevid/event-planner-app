@@ -98,7 +98,7 @@ export function LocationField({
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex items-end gap-2">
+      <div className="flex items-start gap-2">
         <TextField
           id={id}
           label={label}
@@ -119,9 +119,13 @@ export function LocationField({
             }
           }}
         />
-        <Button type="button" variant="secondary" className="mb-[1px] h-[52px]" onClick={find} disabled={busy !== null}>
-          {busy === "search" ? "Finding…" : "Find"}
-        </Button>
+        {/* Spacer the height of the field label keeps the button level with the input, even when a note or error shows below it. */}
+        <div className="flex flex-col gap-1.5">
+          <span aria-hidden="true" className="text-xs font-semibold invisible">.</span>
+          <Button type="button" variant="secondary" className="h-[52px]" onClick={find} disabled={busy !== null}>
+            {busy === "search" ? "Finding…" : "Find"}
+          </Button>
+        </div>
       </div>
       {results ? (
         <ul aria-label="Matching places" className="flex flex-col gap-1 rounded-2xl bg-surface-2 p-1">
