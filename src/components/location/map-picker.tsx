@@ -7,19 +7,24 @@ import { useEffect, useRef } from "react";
 type Point = { lat: number; lng: number };
 
 /**
- * Map with a draggable navy pin and a translucent gold circle for the service
- * radius (V-02). OpenStreetMap tiles; Leaflet is loaded only in the browser.
+ * Map with a draggable navy pin and, for vendors, a translucent gold circle for
+ * the service radius (V-02, C-03, C-04). OpenStreetMap tiles; Leaflet is
+ * loaded only in the browser.
  */
 export function MapPicker({
   point,
   radiusKm,
   showRadius,
   onMove,
+  pinLabel = "Business location",
+  className = "h-64",
 }: {
   point: Point;
   radiusKm: number;
   showRadius: boolean;
   onMove: (point: Point) => void;
+  pinLabel?: string;
+  className?: string;
 }) {
   const container = useRef<HTMLDivElement>(null);
   const map = useRef<LeafletMap | null>(null);
@@ -39,7 +44,7 @@ export function MapPicker({
       if (cancelled || !container.current || map.current) return;
       const m = L.map(container.current, { scrollWheelZoom: false }).setView(
         [point.lat, point.lng],
-        11,
+        showRadius ? 11 : 15,
       );
       L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
         maxZoom: 19,
@@ -55,7 +60,7 @@ export function MapPicker({
         draggable: true,
         icon,
         keyboard: true,
-        title: "Business location. Drag to adjust.",
+        title: `${pinLabel}. Drag to adjust.`,
       }).addTo(m);
       mk.on("dragend", () => {
         const p = mk.getLatLng();
@@ -72,6 +77,10 @@ export function MapPicker({
         fillColor: "#e3be84",
         fillOpacity: 0.18,
       });
+      if (showRadius) {
+        circle.current.addTo(m);
+        m.fitBounds(circle.current.getBounds(), { padding: [16, 16] });
+      }
       map.current = m;
       marker.current = mk;
     })();
@@ -96,16 +105,16 @@ export function MapPicker({
       m.fitBounds(circle.current.getBounds(), { padding: [16, 16] });
     } else {
       circle.current.remove();
-      m.setView([point.lat, point.lng], 14);
+      if (!m.getBounds().pad(-0.1).contains([point.lat, point.lng])) m.setView([point.lat, point.lng], Math.max(m.getZoom(), 15));
     }
   }, [point.lat, point.lng, radiusKm, showRadius]);
 
   return (
     <div
       ref={container}
-      className="h-64 w-full overflow-hidden rounded-[20px] bg-surface-2"
+      className={`${className} w-full overflow-hidden rounded-[20px] bg-surface-2`}
       role="application"
-      aria-label="Map. Drag the pin or tap the map to adjust your business location."
+      aria-label={`Map. Drag the pin or tap the map to adjust the ${pinLabel.toLowerCase()}.`}
     />
   );
 }

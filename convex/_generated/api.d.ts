@@ -35,6 +35,7 @@ import type * as lib_tokens from "../lib/tokens.js";
 import type * as lib_validators from "../lib/validators.js";
 import type * as lib_vendorAccess from "../lib/vendorAccess.js";
 import type * as notifications from "../notifications.js";
+import type * as places from "../places.js";
 import type * as reports from "../reports.js";
 import type * as seed from "../seed.js";
 import type * as users from "../users.js";
@@ -76,6 +77,7 @@ declare const fullApi: ApiFromModules<{
   "lib/validators": typeof lib_validators;
   "lib/vendorAccess": typeof lib_vendorAccess;
   notifications: typeof notifications;
+  places: typeof places;
   reports: typeof reports;
   seed: typeof seed;
   users: typeof users;

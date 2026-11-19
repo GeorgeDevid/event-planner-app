@@ -91,7 +91,7 @@ function SearchForm({
         e.preventDefault();
         const next: Record<string, string> = {};
         if (!categoryId) next.category = "Choose a service.";
-        if (!place) next.place = "Use your location, or find a street address or city.";
+        if (!place) next.place = "Pick a place from the suggestions, or use your current location.";
         if (date && date < today) next.date = "The date can't be in the past.";
         setErrors(next);
         if (Object.keys(next).length === 0 && categoryId && place) onSearch({ categoryId, place, date });
@@ -117,7 +117,7 @@ function SearchForm({
         </div>
         {errors.category ? <p className="text-[13px] font-medium text-danger">{errors.category}</p> : null}
       </fieldset>
-      <LocationField id="search-location" label="Where? (street address or city)" value={place} onChange={setPlace} error={errors.place} allowCurrentLocation />
+      <LocationField id="search-location" label="Where?" value={place} onChange={setPlace} error={errors.place} allowCurrentLocation />
       <TextField id="search-date" label="Date (optional)" type="date" min={today} value={date} error={errors.date} helper="We'll flag vendors who aren't free that day." onChange={(e) => setDate(e.target.value)} />
       <Button type="submit" variant="gold">Show vendors</Button>
     </form>

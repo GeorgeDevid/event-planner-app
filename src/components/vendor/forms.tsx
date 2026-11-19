@@ -1,6 +1,6 @@
 "use client";
 
-import { useAction, useMutation, useQuery } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import dynamic from "next/dynamic";
 import { useRef, useState } from "react";
 import { api } from "../../../convex/_generated/api";
@@ -8,12 +8,13 @@ import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "@/components/ui/button";
 import { FormAlert, TextField } from "@/components/ui/field";
 import { Switch } from "@/components/ui/kit";
+import { AddressAutocomplete } from "@/components/location/address-autocomplete";
 import { errorMessage } from "@/lib/errors";
 import { formatBytes } from "@/lib/format";
 import { checkFile, DOCUMENT_ACCEPT, uploadToConvex } from "@/lib/upload";
 import type { MyVendor } from "./use-vendor";
 
-const MapPicker = dynamic(() => import("./map-picker").then((m) => m.MapPicker), {
+const MapPicker = dynamic(() => import("@/components/location/map-picker").then((m) => m.MapPicker), {
   ssr: false,
   loading: () => <div className="h-64 w-full animate-pulse rounded-[20px] bg-surface-2" />,
 });
@@ -139,42 +140,15 @@ export function CategoriesForm({ vendor, submitLabel, onSaved }: FormProps) {
 const GTA_CENTRE = { lat: 43.6532, lng: -79.3832 };
 
 export function LocationForm({ vendor, submitLabel, onSaved }: FormProps) {
-  const geocode = useAction(api.geocode.search);
   const save = useMutation(api.vendors.setLocation);
 
   const [address, setAddress] = useState(vendor.address ?? "");
   const [point, setPoint] = useState(vendor.location ?? null);
-  const [results, setResults] = useState<{ label: string; lat: number; lng: number }[] | null>(null);
   const [radius, setRadius] = useState(vendor.serviceRadiusKm);
   const [clientsComeToMe, setClientsComeToMe] = useState(vendor.clientsComeToMe);
   const [addressError, setAddressError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [searching, setSearching] = useState(false);
   const [pending, setPending] = useState(false);
-
-  async function findAddress() {
-    setAddressError(null);
-    setResults(null);
-    if (address.trim().length < 3) {
-      setAddressError("Enter your street address and city.");
-      return;
-    }
-    setSearching(true);
-    try {
-      const found = await geocode({ query: address });
-      if (found.length === 0) {
-        setAddressError("We couldn't find that address. Check the spelling, and include the street and city (postal codes can't be looked up yet).");
-      } else if (found.length === 1) {
-        setPoint({ lat: found[0].lat, lng: found[0].lng });
-      } else {
-        setResults(found);
-      }
-    } catch (err) {
-      setAddressError(errorMessage(err));
-    } finally {
-      setSearching(false);
-    }
-  }
 
   const area = address.split(",").slice(0, 2).join(",").trim() || "your location";
 
@@ -185,7 +159,7 @@ export function LocationForm({ vendor, submitLabel, onSaved }: FormProps) {
         e.preventDefault();
         setError(null);
         if (!point) {
-          setAddressError("Find your address on the map first.");
+          setAddressError("Pick your address from the suggestions first.");
           return;
         }
         setPending(true);
@@ -206,53 +180,21 @@ export function LocationForm({ vendor, submitLabel, onSaved }: FormProps) {
       }}
     >
       {error ? <FormAlert>{error}</FormAlert> : null}
-      <div className="flex items-start gap-2">
-        <TextField
-          id="address"
-          label="Business address"
-          className="flex-1"
-          autoComplete="street-address"
-          value={address}
-          error={addressError}
-          onChange={(e) => {
-            setAddress(e.target.value);
-            setPoint(null);
-            setResults(null);
-          }}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              void findAddress();
-            }
-          }}
-        />
-        {/* Spacer the height of the field label keeps the button level with the input, even when an error shows below it. */}
-        <div className="flex flex-col gap-1.5">
-          <span aria-hidden="true" className="text-xs font-semibold invisible">.</span>
-          <Button type="button" variant="secondary" className="h-[52px]" onClick={findAddress} disabled={searching}>
-            {searching ? "Finding…" : "Find"}
-          </Button>
-        </div>
-      </div>
-
-      {results ? (
-        <fieldset className="flex flex-col gap-2">
-          <legend className="mb-2 text-sm font-semibold">Which one is it?</legend>
-          {results.map((r) => (
-            <button
-              key={`${r.lat},${r.lng}`}
-              type="button"
-              onClick={() => {
-                setPoint({ lat: r.lat, lng: r.lng });
-                setResults(null);
-              }}
-              className="min-h-11 rounded-2xl bg-surface-2 px-4 py-3 text-left text-sm hover:bg-line"
-            >
-              {r.label}
-            </button>
-          ))}
-        </fieldset>
-      ) : null}
+      <AddressAutocomplete
+        id="address"
+        label="Business address"
+        text={address}
+        error={addressError}
+        onTextChange={(t) => {
+          setAddress(t);
+          setPoint(null);
+          setAddressError(null);
+        }}
+        onPick={(place) => {
+          setAddress(place.address);
+          setPoint({ lat: place.lat, lng: place.lng });
+        }}
+      />
 
       <div className="flex flex-col gap-2">
         <MapPicker
@@ -264,7 +206,7 @@ export function LocationForm({ vendor, submitLabel, onSaved }: FormProps) {
         <p className="text-[13px] text-ink-2">
           {point
             ? "Drag the pin or tap the map if it isn't quite right."
-            : "Find your address to place the pin."}
+            : "Pick your address to place the pin."}
         </p>
       </div>
 

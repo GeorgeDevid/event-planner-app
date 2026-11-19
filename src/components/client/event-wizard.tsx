@@ -187,7 +187,7 @@ function BasicsStep({
     const next: Record<string, string> = {};
     if (!date) next.date = "Choose the event date.";
     else if (date < today) next.date = "The date can't be in the past.";
-    if (!place) next.address = "Find the event location (street address or city).";
+    if (!place) next.address = "Pick the event location from the suggestions.";
     const guestCount = Number(guests);
     if (!guests.trim()) next.guestCount = "Enter how many guests you expect.";
     else if (!Number.isInteger(guestCount) || guestCount < 1) next.guestCount = "Enter a whole number of 1 or more.";
@@ -264,7 +264,8 @@ function BasicsStep({
       />
       <LocationField
         id="event-location"
-        label="Location (street address or city)"
+        label="Event location"
+        pinLabel="Event location"
         value={place}
         onChange={setPlace}
         error={errors.address}
