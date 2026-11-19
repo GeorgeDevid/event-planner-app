@@ -47,7 +47,7 @@ export function LandingTestimonials() {
             What people say about us
           </h2>
         </div>
-        <ul className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        <ul className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
           {items.map((t, i) => (
             <li key={t._id} className="reveal-item" style={{ "--i": Math.min(i + 1, 10) } as CSSProperties}>
               <TestimonialCard t={t} />

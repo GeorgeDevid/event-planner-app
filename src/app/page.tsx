@@ -167,7 +167,7 @@ export default function Landing() {
 
       {/* How it works */}
       <section id="how-it-works" aria-labelledby="how" className="scroll-mt-6 bg-surface px-5 py-16 lg:px-10 lg:py-24">
-        <Reveal items className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
+        <Reveal items className="mx-auto grid grid-cols-1 max-w-7xl items-center gap-10 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
           <div className="reveal-item relative order-last aspect-[4/3] overflow-hidden rounded-[28px] shadow-float sm:aspect-[16/10] lg:order-first lg:aspect-[4/5]" style={at(1)}>
             <Image src={placeSetting} alt="" fill placeholder="blur" sizes="(min-width: 1024px) 45vw, 100vw" className="scroll-zoom object-cover" />
           </div>
@@ -203,7 +203,7 @@ export default function Landing() {
 
       {/* For vendors */}
       <section id="for-vendors" aria-labelledby="vendors" className="scroll-mt-6 bg-navy-900 px-5 py-16 text-white lg:px-10 lg:py-24">
-        <Reveal items className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
+        <Reveal items className="mx-auto grid grid-cols-1 max-w-7xl items-center gap-10 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
           <div>
             <div className="reveal-item" style={at(0)}>
               <p className="text-xs font-semibold tracking-[0.18em] text-gold-300 uppercase">For vendors</p>

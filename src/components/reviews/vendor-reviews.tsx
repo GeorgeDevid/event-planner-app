@@ -60,7 +60,7 @@ export function VendorReviews({ vendorId, allowWrite = false }: { vendorId: Id<"
         </p>
       ) : (
         <>
-          <div className="grid gap-5 rounded-[20px] bg-surface p-5 shadow-card sm:grid-cols-[auto_1fr] sm:items-center">
+          <div className="grid grid-cols-1 gap-5 rounded-[20px] bg-surface p-5 shadow-card sm:grid-cols-[auto_1fr] sm:items-center">
             <div className="flex flex-col items-start gap-1 sm:items-center sm:px-4">
               <p className="font-display text-[52px] leading-none font-bold">{data.average?.toFixed(1)}</p>
               <Stars value={data.average ?? 0} size={18} />

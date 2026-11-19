@@ -154,7 +154,7 @@ export function VendorResults({
       </div>
 
       {results === undefined ? (
-        <ul aria-hidden="true" className="grid gap-4 md:grid-cols-2">
+        <ul aria-hidden="true" className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {[0, 1].map((i) => (
             <li key={i} className="h-[268px] animate-pulse rounded-[24px] bg-surface-2 motion-reduce:animate-none" />
           ))}
@@ -173,7 +173,7 @@ export function VendorResults({
           ) : null}
         </div>
       ) : (
-        <ul className="stagger grid gap-4 md:grid-cols-2">
+        <ul className="stagger grid grid-cols-1 gap-4 md:grid-cols-2">
           {[...results]
             .sort((a, b) => Number(savedIds.includes(b._id)) - Number(savedIds.includes(a._id)))
             .map((r) => (

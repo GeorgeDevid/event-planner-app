@@ -105,7 +105,7 @@ export function VendorProfileView({
         <section>
           <h2 className="text-[17px] font-bold">Packages</h2>
           {profile.packages.length > 0 ? (
-            <ul className="mt-3 grid gap-3 md:grid-cols-2">
+            <ul className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
               {profile.packages.map((p) => (
                 <li key={p._id} className="rounded-[20px] bg-surface p-4 shadow-card">
                   <div className="flex items-baseline justify-between gap-3">

@@ -75,7 +75,7 @@ function Banners({ data, can }: { data: Data; can: (p: string) => boolean }) {
         {data.banners.map((b, i) => {
           const live = b.published && (!b.startsOn || b.startsOn <= today) && (!b.endsOn || b.endsOn >= today);
           return (
-            <li key={b._id} className="grid gap-4 rounded-[20px] bg-surface p-4 shadow-card md:grid-cols-[280px_1fr]">
+            <li key={b._id} className="grid grid-cols-1 gap-4 rounded-[20px] bg-surface p-4 shadow-card md:grid-cols-[280px_1fr]">
               <BannerCard banner={{ _id: b._id, title: b.title, body: b.body ?? null, linkUrl: b.linkUrl ?? null, linkLabel: b.linkLabel ?? null, imageUrl: b.imageUrl }} />
               <div className="flex flex-col gap-3">
                 <p className="text-sm">

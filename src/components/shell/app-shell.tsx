@@ -48,7 +48,7 @@ export function AppShell({
   // Read by the page-in animation in each route template.
   const slide = { "--page-dx": `${dir * 28}px`, "--page-dy": dir ? "0px" : "8px" } as CSSProperties;
   return (
-    <div className="min-h-dvh [--dock:6rem] lg:flex lg:[--dock:1.5rem] lg:[--side:16rem]">
+    <div className="min-h-dvh overflow-x-clip [--dock:6rem] lg:flex lg:[--dock:1.5rem] lg:[--side:16rem]">
       <SideNav items={items} label={label} logoSuffix={logoSuffix} />
       <main style={slide} className="mx-auto min-h-dvh w-full max-w-md px-5 pt-6 pb-28 sm:max-w-2xl lg:max-w-4xl lg:px-10 lg:pt-10 lg:pb-16">
         {children}
