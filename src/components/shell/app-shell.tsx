@@ -51,7 +51,8 @@ function SideNav({ items, label, logoSuffix }: { items: NavItem[]; label: string
   return (
     <aside className="sticky top-0 hidden h-dvh w-64 shrink-0 flex-col bg-navy-900 px-4 py-8 text-white lg:flex">
       <div className="px-3">
-        <Logo tone="light" suffix={logoSuffix} />
+        <Logo tone="light" />
+        {logoSuffix ? <p className="mt-1.5 text-[11px] font-semibold tracking-[0.18em] text-gold-300 uppercase">{logoSuffix}</p> : null}
       </div>
       <nav aria-label={label} className="mt-10">
         <ul className="flex flex-col gap-1">

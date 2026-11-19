@@ -65,9 +65,11 @@ export default function Landing() {
             <Link href="#for-vendors" className="rounded-full px-4 py-3 text-white/90 hover:bg-white/10 hover:text-white">For vendors</Link>
             <Link href="/faq" className="rounded-full px-4 py-3 text-white/90 hover:bg-white/10 hover:text-white">FAQ</Link>
           </nav>
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2 whitespace-nowrap">
             <LinkButton href="/sign-in" variant="ghost" className="text-white hover:bg-white/10">Log in</LinkButton>
-            <LinkButton href="/sign-up" variant="secondary" className="hidden border-none sm:inline-flex">Sign up</LinkButton>
+            <span className="hidden sm:block">
+              <LinkButton href="/sign-up" variant="secondary" className="border-none">Sign up</LinkButton>
+            </span>
           </div>
         </header>
 
@@ -138,7 +140,7 @@ export default function Landing() {
                 </Link>
               </li>
             ))}
-            <li className="col-span-2 md:col-span-3 lg:col-span-1">
+            <li className="col-span-2 md:col-span-3 lg:col-span-2">
               <Link
                 href="/vendors"
                 className="flex h-full min-h-44 flex-col justify-between rounded-[20px] bg-gold-cta p-5 text-navy-900 shadow-card sm:min-h-56"
@@ -157,7 +159,7 @@ export default function Landing() {
       {/* How it works */}
       <section id="how-it-works" aria-labelledby="how" className="scroll-mt-6 bg-surface px-5 py-16 lg:px-10 lg:py-24">
         <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
-          <div className="relative order-last aspect-[4/5] overflow-hidden rounded-[28px] shadow-float sm:aspect-[16/10] lg:order-first lg:aspect-[4/5]">
+          <div className="relative order-last aspect-[4/3] overflow-hidden rounded-[28px] shadow-float sm:aspect-[16/10] lg:order-first lg:aspect-[4/5]">
             <Image src={placeSetting} alt="" fill placeholder="blur" sizes="(min-width: 1024px) 45vw, 100vw" className="object-cover" />
           </div>
           <div>
@@ -212,8 +214,8 @@ export default function Landing() {
               <ArrowBadge tone="dark" />
             </LinkButton>
           </div>
-          <div className="relative aspect-[4/5] overflow-hidden rounded-[28px] sm:aspect-[16/10] lg:aspect-[4/5]">
-            <Image src={vendorOwner} alt="" fill placeholder="blur" sizes="(min-width: 1024px) 45vw, 100vw" className="object-cover object-top" />
+          <div className="relative aspect-[4/3] overflow-hidden rounded-[28px] sm:aspect-[16/10] lg:aspect-[4/5]">
+            <Image src={vendorOwner} alt="" fill placeholder="blur" sizes="(min-width: 1024px) 45vw, 100vw" className="object-cover object-[center_20%]" />
           </div>
         </div>
       </section>

@@ -15,8 +15,14 @@ const variants: Record<Variant, string> = {
   danger: "bg-danger text-white hover:brightness-110",
 };
 
+// A text colour passed in `extra` (e.g. a red "Delete" ghost button) must win
+// over the variant's own, which CSS order alone doesn't guarantee.
+const TEXT_COLOUR = /(^|\s)(hover:)?text-(danger|white|ink|ink-2|navy-\d+|gold-[\w-]+|success|info|pending|muted|on-navy-2)(\s|$)/;
+
 export function buttonClasses(variant: Variant = "navy", extra = "") {
-  return `${base} ${variants[variant]} ${extra}`;
+  let own = variants[variant];
+  if (TEXT_COLOUR.test(extra)) own = own.replace(/(^|\s)text-[\w-]+/g, "");
+  return `${base} ${own} ${extra}`;
 }
 
 export function Button({

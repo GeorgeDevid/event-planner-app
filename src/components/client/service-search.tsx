@@ -18,7 +18,7 @@ export function ServiceSearch({ profileBase = "/app/vendors", backHref = "/app" 
   const [params, setParams] = useQueryState();
   // Links from the landing page name the service (?service=Photography) rather than its id.
   const service = params.get("service")?.toLowerCase();
-  const cat = (params.get("cat") ?? categories?.find((c) => c.name.toLowerCase() === service)?._id ?? null) as Id<"categories"> | null;
+  const cat = (params.get("cat") || (categories?.find((c) => c.name.toLowerCase() === service)?._id ?? null)) as Id<"categories"> | null;
   const lat = Number(params.get("lat"));
   const lng = Number(params.get("lng"));
   const hasSearch = !!cat && params.has("lat") && Number.isFinite(lat) && Number.isFinite(lng);

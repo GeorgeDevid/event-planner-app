@@ -10,7 +10,7 @@ export default function PublicVendorsLayout({ children }: { children: ReactNode 
   return (
     <div className="min-h-dvh bg-cream [--dock:5.75rem] lg:[--dock:1.5rem]">
       <header className="hidden bg-navy-900 lg:block">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-10 py-4">
+        <div className="mx-auto flex max-w-4xl items-center justify-between gap-4 px-10 py-4">
           <Logo tone="light" />
           <nav aria-label="Account" className="flex items-center gap-2 text-sm">
             <span className="mr-2 text-on-navy-2">Plan your event with these vendors</span>

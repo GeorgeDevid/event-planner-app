@@ -4,7 +4,7 @@ export function Logo({ tone = "dark", suffix }: { tone?: "dark" | "light"; suffi
   return (
     <Link
       href="/"
-      className={`font-display text-[26px] font-bold leading-none ${
+      className={`font-display text-[26px] font-bold leading-none whitespace-nowrap ${
         tone === "dark" ? "text-navy-900" : "text-white"
       }`}
     >
