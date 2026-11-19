@@ -43,7 +43,6 @@ import type * as users from "../users.js";
 import type * as vendorSearch from "../vendorSearch.js";
 import type * as vendorStats from "../vendorStats.js";
 import type * as vendors from "../vendors.js";
-import type * as zzReviewChecks from "../zzReviewChecks.js";
 
 import type {
   ApiFromModules,
@@ -87,7 +86,6 @@ declare const fullApi: ApiFromModules<{
   vendorSearch: typeof vendorSearch;
   vendorStats: typeof vendorStats;
   vendors: typeof vendors;
-  zzReviewChecks: typeof zzReviewChecks;
 }>;
 
 /**
