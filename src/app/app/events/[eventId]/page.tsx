@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+import heroImage from "../../../../../public/images/hero.webp";
 import { useMutation, useQuery } from "convex/react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -48,9 +50,10 @@ function EventDashboard() {
   const budget = formatBudget(event.budgetMinCents, event.budgetMaxCents);
 
   return (
-    <div className="-mx-5 -mt-6 flex flex-col gap-6">
-      <section aria-label="Event summary" className="relative overflow-hidden rounded-b-[28px] bg-dusk px-5 pt-6 pb-6 text-white">
-        <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-b from-navy-900/10 to-navy-900/80" />
+    <div className="-mx-5 -mt-6 flex flex-col gap-6 lg:mx-0 lg:mt-0">
+      <section aria-label="Event summary" className="relative isolate overflow-hidden rounded-b-[28px] bg-navy-900 px-5 pt-6 pb-6 text-white lg:rounded-[28px] lg:px-8 lg:pb-8">
+        <Image src={heroImage} alt="" fill placeholder="blur" sizes="(min-width: 1024px) 900px, 100vw" className="-z-10 object-cover" />
+        <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-b from-navy-900/30 to-navy-900/90" />
         <div className="relative flex items-center justify-between">
           <Link href="/app/events" aria-label="Back to my events" className="flex size-11 items-center justify-center rounded-full bg-white text-navy-900 shadow-card">
             <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 6l-6 6 6 6" /></svg>
@@ -61,8 +64,8 @@ function EventDashboard() {
         </div>
         <div className="relative mt-16">
           <p className="text-xs font-semibold text-gold-300">{event.eventType?.name ?? "Event"}</p>
-          <h1 className="font-display text-[34px] leading-[1.05] font-bold">{event.name}</h1>
-          <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+          <h1 className="font-display text-[34px] leading-[1.05] font-bold lg:text-[46px]">{event.name}</h1>
+          <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-sm sm:grid-cols-4">
             <div><dt className="text-xs text-on-navy-2">Date</dt><dd className="font-semibold">{event.date ? formatIsoDate(event.date) : "—"}</dd></div>
             <div><dt className="text-xs text-on-navy-2">Guests</dt><dd className="font-semibold">{event.guestCount ?? "—"}</dd></div>
             <div><dt className="text-xs text-on-navy-2">Location</dt><dd className="truncate font-semibold">{event.address ? shortAddress(event.address) : "—"}</dd></div>

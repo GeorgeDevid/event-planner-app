@@ -454,7 +454,7 @@ function Composer({ inquiryId }: { inquiryId: Id<"inquiries"> }) {
 
   return (
     <form
-      className="fixed inset-x-3 bottom-24 z-20 mx-auto flex max-w-md flex-col gap-2 rounded-[24px] bg-surface p-2 shadow-float"
+      className="dock z-20 flex max-w-md flex-col lg:max-w-2xl gap-2 rounded-[24px] bg-surface p-2 shadow-float"
       onSubmit={(e) => {
         e.preventDefault();
         void submit();

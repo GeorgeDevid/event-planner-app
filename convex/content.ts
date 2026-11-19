@@ -55,6 +55,17 @@ export const publishedFaqs = query({
       .map((f) => ({ _id: f._id, question: f.question, answer: f.answer })),
 });
 
+/** App reviews for the landing page (published only, in admin order). */
+export const publishedTestimonials = query({
+  args: {},
+  handler: async (ctx) => {
+    const rows = await ctx.db.query("testimonials").withIndex("by_order").collect();
+    return rows
+      .filter((t) => t.published)
+      .map((t) => ({ _id: t._id, name: t.name, detail: t.detail ?? null, quote: t.quote, rating: t.rating }));
+  },
+});
+
 export const legal = query({
   args: { kind: v.union(v.literal("terms"), v.literal("privacy")) },
   handler: async (ctx, { kind }) => {
@@ -106,6 +117,7 @@ export const adminAll = query({
     await requirePermission(ctx, "content:view");
     const banners = await ctx.db.query("banners").withIndex("by_order").collect();
     const faqs = await ctx.db.query("faqs").withIndex("by_order").collect();
+    const testimonials = await ctx.db.query("testimonials").withIndex("by_order").collect();
     const docs = await ctx.db.query("legalDocs").collect();
     const legalFor = (kind: Kind) => {
       const rows = docs.filter((d) => d.kind === kind).sort((a, b) => b.version - a.version);
@@ -122,6 +134,7 @@ export const adminAll = query({
         banners.map(async (b) => ({ ...b, imageUrl: b.imageId ? await ctx.storage.getUrl(b.imageId) : null })),
       ),
       faqs,
+      testimonials,
       terms: legalFor("terms"),
       privacy: legalFor("privacy"),
     };
@@ -230,7 +243,7 @@ export const setFaqPublished = mutation({
 });
 
 export const moveItem = mutation({
-  args: { table: v.union(v.literal("banners"), v.literal("faqs")), id: v.string(), direction: v.union(v.literal("up"), v.literal("down")) },
+  args: { table: v.union(v.literal("banners"), v.literal("faqs"), v.literal("testimonials")), id: v.string(), direction: v.union(v.literal("up"), v.literal("down")) },
   handler: async (ctx, { table, id, direction }) => {
     await requirePermission(ctx, "content:edit");
     const rows = await ctx.db.query(table).withIndex("by_order").collect();
@@ -248,6 +261,56 @@ export const removeFaq = mutation({
     const admin = await requirePermission(ctx, "content:delete");
     await ctx.db.delete(faqId);
     await audit(ctx, { actor: admin, action: "content.faq_deleted", module: "content", targetTable: "faqs", targetId: faqId });
+  },
+});
+
+export const saveTestimonial = mutation({
+  args: {
+    testimonialId: v.optional(v.id("testimonials")),
+    name: v.string(),
+    detail: v.optional(v.string()),
+    quote: v.string(),
+    rating: v.number(),
+  },
+  handler: async (ctx, { testimonialId, name, detail, quote, rating }) => {
+    const admin = await requirePermission(ctx, testimonialId ? "content:edit" : "content:create");
+    const n = name.trim();
+    const d = detail?.trim() || undefined;
+    const q = quote.trim();
+    if (n.length < 2 || n.length > 80) invalid("Enter the reviewer's name (2 to 80 characters).", "name");
+    if (d && d.length > 80) invalid("Keep the detail under 80 characters.", "detail");
+    if (q.length < 10 || q.length > 600) invalid("Write the review (10 to 600 characters).", "quote");
+    if (!Number.isInteger(rating) || rating < 1 || rating > 5) invalid("Pick a rating from 1 to 5 stars.", "rating");
+    const fields = { name: n, detail: d, quote: q, rating, updatedAt: Date.now() };
+    if (testimonialId) {
+      await ctx.db.patch(testimonialId, fields);
+      await audit(ctx, { actor: admin, action: "content.testimonial_updated", module: "content", targetTable: "testimonials", targetId: testimonialId });
+      return testimonialId;
+    }
+    const count = (await ctx.db.query("testimonials").collect()).length;
+    const id = await ctx.db.insert("testimonials", { ...fields, published: false, order: count });
+    await audit(ctx, { actor: admin, action: "content.testimonial_created", module: "content", targetTable: "testimonials", targetId: id });
+    return id;
+  },
+});
+
+export const setTestimonialPublished = mutation({
+  args: { testimonialId: v.id("testimonials"), published: v.boolean() },
+  handler: async (ctx, { testimonialId, published }) => {
+    const admin = await requirePermission(ctx, "content:edit");
+    await ctx.db.patch(testimonialId, { published, updatedAt: Date.now() });
+    await audit(ctx, { actor: admin, action: published ? "content.testimonial_published" : "content.testimonial_unpublished", module: "content", targetTable: "testimonials", targetId: testimonialId });
+  },
+});
+
+export const removeTestimonial = mutation({
+  args: { testimonialId: v.id("testimonials") },
+  handler: async (ctx, { testimonialId }) => {
+    const admin = await requirePermission(ctx, "content:delete");
+    const t = await ctx.db.get(testimonialId);
+    if (!t) return;
+    await ctx.db.delete(testimonialId);
+    await audit(ctx, { actor: admin, action: "content.testimonial_deleted", module: "content", targetTable: "testimonials", targetId: testimonialId, before: { name: t.name } });
   },
 });
 

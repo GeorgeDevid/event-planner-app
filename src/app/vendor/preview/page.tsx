@@ -15,14 +15,13 @@ export default function VendorPreview() {
   if (!profile) return <FullPageLoader />;
 
   return (
-    <div className="-mx-5 -mt-6">
+    <div className="-mx-5 -mt-6 lg:mx-0 lg:mt-0">
       <p role="status" className="mx-5 mt-4 mb-3 rounded-2xl bg-info-bg px-4 py-3 text-sm font-medium text-info">
         Preview: this is how clients will see your profile
         {profile.isPreview ? " once it's approved" : ""}.
       </p>
       <VendorProfileView
         profile={profile}
-        actionsBottom="bottom-24"
         topLeft={
           <Link
             href="/vendor/profile"

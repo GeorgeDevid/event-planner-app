@@ -48,7 +48,7 @@ export default function VendorPackages() {
           </p>
         </Card>
       ) : (
-        <ul className="flex flex-col gap-3">
+        <ul className="grid gap-3 md:grid-cols-2">
           {vendor.packages.map((p) => (
             <li
               key={p._id}

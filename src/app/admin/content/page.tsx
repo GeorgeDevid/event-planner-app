@@ -7,6 +7,8 @@ import { api } from "../../../../convex/_generated/api";
 import type { Id } from "../../../../convex/_generated/dataModel";
 import { AdminHeader, Drawer, formatDateTime, Tabs } from "@/components/admin/ui";
 import { BannerCard } from "@/components/content/banners";
+import { TestimonialCard } from "@/components/content/testimonials";
+import { Stars, StarInput } from "@/components/ui/stars";
 import { FaqItems } from "@/components/content/faq-list";
 import { LegalText } from "@/components/content/legal-text";
 import { useMe } from "@/components/shell/role-gate";
@@ -18,9 +20,9 @@ import { formatIsoDate } from "@/lib/format";
 import { uploadToConvex } from "@/lib/upload";
 
 type Data = FunctionReturnType<typeof api.content.adminAll>;
-type Tab = "banners" | "faqs" | "terms" | "privacy";
+type Tab = "banners" | "faqs" | "reviews" | "terms" | "privacy";
 
-/** A-09: banners, FAQs, Terms and Privacy. Drafts are previewed before publishing. */
+/** A-09: banners, FAQs, app reviews, Terms and Privacy. Drafts are previewed before publishing. */
 export default function ContentPage() {
   const me = useMe();
   const data = useQuery(api.content.adminAll);
@@ -38,12 +40,14 @@ export default function ContentPage() {
         tabs={[
           { value: "banners", label: "Home banners", count: data.banners.length },
           { value: "faqs", label: "FAQs", count: data.faqs.length },
+          { value: "reviews", label: "App reviews", count: data.testimonials.length },
           { value: "terms", label: "Terms of Service" },
           { value: "privacy", label: "Privacy Policy" },
         ]}
       />
       {tab === "banners" ? <Banners data={data} can={can} /> : null}
       {tab === "faqs" ? <Faqs data={data} can={can} /> : null}
+      {tab === "reviews" ? <Reviews data={data} can={can} /> : null}
       {tab === "terms" || tab === "privacy" ? <Legal key={tab} kind={tab} doc={data[tab]} canEdit={can("content:edit")} /> : null}
     </div>
   );
@@ -189,6 +193,103 @@ function BannerForm({ banner, onDone }: { banner: Data["banners"][number] | null
       </div>
       <p className="text-sm text-ink-2">{banner ? "Saving updates the banner; it stays published or unpublished as it is." : "New banners are saved as drafts. Publish from the list when ready."}</p>
       <Button type="submit" variant="gold" disabled={pending}>{pending ? "Saving…" : "Save banner"}</Button>
+    </form>
+  );
+}
+
+// ---------------------------------------------------------------------------
+
+type Review = Data["testimonials"][number];
+
+function Reviews({ data, can }: { data: Data; can: (p: string) => boolean }) {
+  const setPublished = useMutation(api.content.setTestimonialPublished);
+  const move = useMutation(api.content.moveItem);
+  const remove = useMutation(api.content.removeTestimonial);
+  const [editing, setEditing] = useState<Review | "new" | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const rows = data.testimonials;
+
+  return (
+    <section className="flex flex-col gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="max-w-xl text-sm text-ink-2">
+          Published reviews show in the &ldquo;What people say&rdquo; section of the landing page, in this order. Only add
+          reviews real customers gave you, with their permission.
+        </p>
+        {can("content:create") ? <Button type="button" variant="gold" onClick={() => setEditing("new")}>New review</Button> : null}
+      </div>
+      {error ? <FormAlert>{error}</FormAlert> : null}
+      {rows.length === 0 ? <p className="rounded-[20px] bg-surface p-6 text-center text-sm text-ink-2 shadow-card">No reviews yet. The landing page hides the section until one is published.</p> : null}
+      <ol className="flex flex-col gap-3">
+        {rows.map((t, i) => (
+          <li key={t._id} className="flex flex-wrap items-center gap-4 rounded-[20px] bg-surface p-4 shadow-card">
+            <div className="min-w-[220px] flex-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <Stars value={t.rating} size={14} />
+                <p className="font-semibold">{t.name}</p>
+                {t.detail ? <p className="text-sm text-ink-2">· {t.detail}</p> : null}
+              </div>
+              <p className="mt-1 line-clamp-2 text-sm text-ink-2">{t.quote}</p>
+            </div>
+            {can("content:edit") ? (
+              <>
+                <div className="w-36">
+                  <Switch checked={t.published} label={t.published ? "Published" : "Draft"} onChange={(published) => setPublished({ testimonialId: t._id, published }).catch((e) => setError(errorMessage(e)))} />
+                </div>
+                <Button type="button" variant="secondary" className="min-h-10 px-4 text-sm" onClick={() => setEditing(t)}>Edit</Button>
+                <Button type="button" variant="ghost" className="min-h-10 px-3 text-sm" aria-label="Move up" disabled={i === 0} onClick={() => move({ table: "testimonials", id: t._id, direction: "up" })}>▲</Button>
+                <Button type="button" variant="ghost" className="min-h-10 px-3 text-sm" aria-label="Move down" disabled={i === rows.length - 1} onClick={() => move({ table: "testimonials", id: t._id, direction: "down" })}>▼</Button>
+              </>
+            ) : null}
+            {can("content:delete") ? (
+              <Button type="button" variant="ghost" className="min-h-10 px-3 text-sm text-danger" onClick={() => window.confirm(`Delete the review from ${t.name}?`) && remove({ testimonialId: t._id }).catch((e) => setError(errorMessage(e)))}>
+                Delete
+              </Button>
+            ) : null}
+          </li>
+        ))}
+      </ol>
+      <Drawer open={editing !== null} onClose={() => setEditing(null)} title={editing === "new" ? "New review" : "Edit review"}>
+        {editing ? <ReviewForm review={editing === "new" ? null : editing} onDone={() => setEditing(null)} /> : null}
+      </Drawer>
+    </section>
+  );
+}
+
+function ReviewForm({ review, onDone }: { review: Review | null; onDone: () => void }) {
+  const save = useMutation(api.content.saveTestimonial);
+  const [f, setF] = useState({ name: review?.name ?? "", detail: review?.detail ?? "", quote: review?.quote ?? "" });
+  const [rating, setRating] = useState(review?.rating ?? 5);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [pending, setPending] = useState(false);
+  const set = (k: keyof typeof f) => (e: { target: { value: string } }) => setF((x) => ({ ...x, [k]: e.target.value }));
+
+  return (
+    <form
+      className="flex flex-col gap-4"
+      onSubmit={async (e) => {
+        e.preventDefault();
+        setErrors({});
+        setPending(true);
+        try {
+          await save({ testimonialId: review?._id, name: f.name, detail: f.detail || undefined, quote: f.quote, rating });
+          onDone();
+        } catch (err) {
+          setErrors({ [errorField(err) ?? "form"]: errorMessage(err) });
+        } finally {
+          setPending(false);
+        }
+      }}
+    >
+      <p className="text-xs font-semibold text-ink-2">Preview</p>
+      <TestimonialCard t={{ _id: "preview", name: f.name || "Reviewer name", detail: f.detail || null, quote: f.quote || "Their review appears here.", rating }} />
+      {errors.form ? <FormAlert>{errors.form}</FormAlert> : null}
+      <StarInput value={rating} onChange={setRating} error={errors.rating} />
+      <TextField id="t-name" label="Name" maxLength={80} value={f.name} error={errors.name} onChange={set("name")} helper="As the reviewer agreed to be shown, e.g. Priya S." />
+      <TextField id="t-detail" label="Detail (optional)" maxLength={80} value={f.detail} error={errors.detail} onChange={set("detail")} helper="e.g. Wedding in Mississauga, or Florist, Brampton" />
+      <TextArea id="t-quote" label="Review" maxLength={600} value={f.quote} error={errors.quote} onChange={set("quote")} />
+      <p className="text-sm text-ink-2">{review ? "Saving keeps it published or unpublished as it is." : "New reviews are saved as drafts. Publish from the list when ready."}</p>
+      <Button type="submit" variant="gold" disabled={pending}>{pending ? "Saving…" : "Save review"}</Button>
     </form>
   );
 }

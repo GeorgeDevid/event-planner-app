@@ -17,14 +17,11 @@ export function VendorProfileView({
   profile,
   topLeft,
   actions,
-  actionsBottom = "bottom-3",
   footer,
 }: {
   profile: PublicProfile;
   topLeft?: ReactNode;
   actions?: ReactNode;
-  /** Lift the action bar above a bottom tab bar when there is one. */
-  actionsBottom?: "bottom-3" | "bottom-24";
   /** Extra content under the packages, e.g. "Report this vendor". */
   footer?: ReactNode;
 }) {
@@ -32,9 +29,9 @@ export function VendorProfileView({
   const photos = profile.images.filter((u): u is string => !!u);
   return (
     <article className="flex flex-col pb-32">
-      <div className="relative h-[340px] overflow-hidden rounded-b-[28px]">
+      <div className="relative h-[340px] overflow-hidden rounded-b-[28px] lg:h-[420px] lg:rounded-[28px]">
         {profile.coverUrl ? (
-          <Image src={profile.coverUrl} alt="" fill priority sizes="448px" className="object-cover" />
+          <Image src={profile.coverUrl} alt="" fill priority sizes="(min-width: 1024px) 900px, 100vw" className="object-cover" />
         ) : (
           <PhotoPlaceholder label="Cover photo" className="absolute inset-0" />
         )}
@@ -42,7 +39,7 @@ export function VendorProfileView({
         <div className="absolute inset-x-4 top-4 flex justify-between">{topLeft}</div>
         <div className="absolute inset-x-5 bottom-10">
           <p className="text-xs font-semibold text-gold-300">{profile.categories.join(" · ")}</p>
-          <h1 className="font-display text-[36px] leading-[1.05] font-bold text-white">{profile.companyName}</h1>
+          <h1 className="font-display text-[36px] leading-[1.05] font-bold text-white lg:text-[52px]">{profile.companyName}</h1>
           {profile.verified ? (
             <p className="mt-1 inline-flex items-center gap-1.5 text-sm font-semibold text-gold-300">
               <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z" /><path d="M9 12l2 2 4-4" /></svg>
@@ -52,13 +49,13 @@ export function VendorProfileView({
         </div>
       </div>
 
-      <div className="relative -mt-6 mx-4 grid grid-cols-3 gap-2 rounded-[20px] bg-surface p-4 text-center shadow-card">
+      <div className="relative -mt-6 mx-4 grid grid-cols-3 gap-2 rounded-[20px] bg-surface p-4 text-center shadow-card lg:mx-auto lg:w-full lg:max-w-xl">
         <Fact label="Average price" value={profile.avgPriceCents ? formatCents(profile.avgPriceCents) : "On request"} />
         <Fact label="Packages" value={String(profile.packages.length)} />
         <Fact label={profile.clientsComeToMe ? "Visit them" : "Travels"} value={profile.clientsComeToMe ? "In studio" : "To you"} />
       </div>
 
-      <div className="flex flex-col gap-7 px-5 pt-7">
+      <div className="flex flex-col gap-7 px-5 pt-7 lg:px-0">
         <section>
           <h2 className="text-[17px] font-bold">About</h2>
           <p className="mt-1 text-sm text-ink-2">Run by {profile.ownerName}</p>
@@ -76,7 +73,7 @@ export function VendorProfileView({
         <section>
           <h2 className="text-[17px] font-bold">Portfolio</h2>
           {profile.images.length > 0 ? (
-            <ul className="mt-3 grid grid-cols-3 gap-2">
+            <ul className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-5">
               {profile.images.map((url, i) =>
                 url ? (
                   <li key={url} className="relative aspect-square overflow-hidden rounded-2xl">
@@ -86,7 +83,7 @@ export function VendorProfileView({
                       aria-label={`Open photo ${i + 1} of ${profile.images.length}`}
                       className="absolute inset-0"
                     >
-                      <Image src={url} alt="" fill sizes="140px" className="object-cover" />
+                      <Image src={url} alt="" fill sizes="(min-width: 1024px) 180px, 33vw" className="object-cover" />
                     </button>
                   </li>
                 ) : null,
@@ -100,7 +97,7 @@ export function VendorProfileView({
         <section>
           <h2 className="text-[17px] font-bold">Packages</h2>
           {profile.packages.length > 0 ? (
-            <ul className="mt-3 flex flex-col gap-3">
+            <ul className="mt-3 grid gap-3 md:grid-cols-2">
               {profile.packages.map((p) => (
                 <li key={p._id} className="rounded-[20px] bg-surface p-4 shadow-card">
                   <div className="flex items-baseline justify-between gap-3">
@@ -123,7 +120,7 @@ export function VendorProfileView({
       ) : null}
 
       {actions ? (
-        <div className={`fixed inset-x-3 ${actionsBottom} z-20 mx-auto flex max-w-md items-center gap-3 rounded-[24px] bg-navy-900 p-3 pl-5 text-white shadow-float`}>
+        <div className={`dock z-20 flex max-w-md items-center gap-3 rounded-[24px] bg-navy-900 p-3 pl-5 text-white shadow-float`}>
           {actions}
         </div>
       ) : null}

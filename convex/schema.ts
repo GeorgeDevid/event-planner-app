@@ -278,6 +278,17 @@ export default defineSchema({
     updatedAt: v.number(),
   }).index("by_order", ["order"]),
 
+  // App reviews shown on the landing page, entered and curated by admins.
+  testimonials: defineTable({
+    name: v.string(),
+    detail: v.optional(v.string()),
+    quote: v.string(),
+    rating: v.number(),
+    published: v.boolean(),
+    order: v.number(),
+    updatedAt: v.number(),
+  }).index("by_order", ["order"]),
+
   // Each publish creates a new version; people accept the latest (A-09 #3).
   legalDocs: defineTable({
     kind: v.union(v.literal("terms"), v.literal("privacy")),

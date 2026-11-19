@@ -147,7 +147,7 @@ export default function VendorCalendar() {
       {error ? <FormAlert>{error}</FormAlert> : null}
 
       {selected.length > 0 ? (
-        <div className="sticky bottom-24 z-10 flex flex-col gap-3 rounded-[24px] bg-navy-900 p-4 text-white shadow-float">
+        <div className="sticky bottom-[var(--dock)] z-10 flex flex-col gap-3 rounded-[24px] bg-navy-900 p-4 text-white shadow-float">
           <p className="text-sm" aria-live="polite">
             {selected.length} day{selected.length === 1 ? "" : "s"} selected
           </p>

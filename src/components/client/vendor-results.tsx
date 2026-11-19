@@ -152,7 +152,7 @@ export function VendorResults({
       </div>
 
       {results === undefined ? (
-        <ul aria-hidden="true" className="flex flex-col gap-4">
+        <ul aria-hidden="true" className="grid gap-4 md:grid-cols-2">
           {[0, 1].map((i) => (
             <li key={i} className="h-[268px] animate-pulse rounded-[24px] bg-surface-2 motion-reduce:animate-none" />
           ))}
@@ -171,7 +171,7 @@ export function VendorResults({
           ) : null}
         </div>
       ) : (
-        <ul className="flex flex-col gap-4">
+        <ul className="grid gap-4 md:grid-cols-2">
           {[...results]
             .sort((a, b) => Number(savedIds.includes(b._id)) - Number(savedIds.includes(a._id)))
             .map((r) => (
@@ -277,10 +277,10 @@ export function VendorCard({ vendor, saved = false, href }: { vendor: Result; sa
   return (
     <Link
       href={href ?? `/app/vendors/${vendor._id}`}
-      className="block overflow-hidden rounded-[24px] bg-surface shadow-card transition-transform active:scale-[0.99]"
+      className="block h-full overflow-hidden rounded-[24px] bg-surface shadow-card transition-[transform,box-shadow] hover:shadow-float active:scale-[0.99]"
     >
       <div className="relative h-[160px] bg-dusk">
-        {vendor.coverUrl ? <Image src={vendor.coverUrl} alt="" fill sizes="448px" className="object-cover" /> : null}
+        {vendor.coverUrl ? <Image src={vendor.coverUrl} alt="" fill sizes="(min-width: 768px) 440px, 100vw" className="object-cover" /> : null}
         <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
           {vendor.featured ? <span className="rounded-full bg-gold-300 px-2.5 py-1 text-xs font-bold text-navy-900">Featured</span> : null}
           {saved ? <span className="rounded-full bg-navy-900/80 px-2.5 py-1 text-xs font-semibold text-white">Saved</span> : null}

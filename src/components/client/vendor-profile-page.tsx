@@ -52,10 +52,9 @@ export function VendorProfilePage({ guest = false }: { guest?: boolean }) {
   }
 
   return (
-    <div className="-mx-5 -mt-6">
+    <div className="-mx-5 -mt-6 lg:mx-0 lg:mt-0">
       <VendorProfileView
         profile={profile}
-        actionsBottom={guest ? "bottom-3" : "bottom-24"}
         topLeft={
           <>
             {backButton}

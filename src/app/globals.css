@@ -83,3 +83,16 @@
     #f2d3a6 100%
   );
 }
+
+/*
+ * Floating bars (message composer, vendor actions) sit above the bottom tab
+ * bar on phones and inside the content column on desktop. Layouts set
+ * --dock (gap from the bottom of the screen) and --side (desktop sidebar width).
+ */
+@utility dock {
+  position: fixed;
+  left: calc(var(--side, 0px) + 0.75rem);
+  right: 0.75rem;
+  bottom: var(--dock, 0.75rem);
+  margin-inline: auto;
+}

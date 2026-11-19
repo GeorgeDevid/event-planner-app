@@ -16,7 +16,9 @@ import { formatIsoDate, shortAddress, torontoTodayIso } from "@/lib/format";
 export function ServiceSearch({ profileBase = "/app/vendors", backHref = "/app" }: { profileBase?: string; backHref?: string }) {
   const categories = useQuery(api.catalog.categories);
   const [params, setParams] = useQueryState();
-  const cat = params.get("cat") as Id<"categories"> | null;
+  // Links from the landing page name the service (?service=Photography) rather than its id.
+  const service = params.get("service")?.toLowerCase();
+  const cat = (params.get("cat") ?? categories?.find((c) => c.name.toLowerCase() === service)?._id ?? null) as Id<"categories"> | null;
   const lat = Number(params.get("lat"));
   const lng = Number(params.get("lng"));
   const hasSearch = !!cat && params.has("lat") && Number.isFinite(lat) && Number.isFinite(lng);

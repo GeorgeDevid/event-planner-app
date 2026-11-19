@@ -1,4 +1,4 @@
-import { BottomNav } from "@/components/shell/bottom-nav";
+import { AppShell } from "@/components/shell/app-shell";
 import { icons } from "@/components/shell/nav-icons";
 import { RoleGate } from "@/components/shell/role-gate";
 
@@ -12,8 +12,9 @@ const NAV = [
 export default function VendorLayout({ children }: LayoutProps<"/vendor">) {
   return (
     <RoleGate role="vendor">
-      <div className="mx-auto min-h-dvh max-w-md px-5 pt-6 pb-28">{children}</div>
-      <BottomNav items={NAV} label="Vendor" />
+      <AppShell items={NAV} label="Vendor" logoSuffix="for vendors">
+        {children}
+      </AppShell>
     </RoleGate>
   );
 }

@@ -1,8 +1,10 @@
+import Image from "next/image";
 import type { ReactNode } from "react";
+import placeSetting from "../../../public/images/place-setting.webp";
 import { Logo } from "@/components/ui/logo";
 
 /**
- * Sign-up / log-in layout: a dusk photo panel with a two-line serif headline
+ * Sign-up / log-in layout: a candle-lit table photo panel with a two-line serif headline
  * and the form in a white sheet (C-01a, C-01b). On phones the photo sits on
  * top and the sheet overlaps it.
  */
@@ -19,11 +21,12 @@ export function AuthShell({
     <main className="min-h-dvh bg-cream lg:grid lg:grid-cols-2">
       <section
         aria-label="Welcome"
-        className="relative flex min-h-[340px] flex-col justify-between overflow-hidden bg-dusk p-6 lg:min-h-dvh lg:p-12"
+        className="relative isolate flex min-h-[340px] flex-col justify-between overflow-hidden bg-navy-900 p-6 lg:sticky lg:top-0 lg:h-dvh lg:min-h-0 lg:p-12"
       >
+        <Image src={placeSetting} alt="" fill priority placeholder="blur" sizes="(min-width: 1024px) 50vw, 100vw" className="-z-10 object-cover" />
         <div
           aria-hidden="true"
-          className="absolute inset-0 bg-gradient-to-b from-navy-900/0 via-navy-900/10 to-navy-900/80"
+          className="absolute inset-0 -z-10 bg-gradient-to-b from-navy-900/40 via-navy-900/20 to-navy-900/85"
         />
         <div className="relative">
           <Logo tone="light" />

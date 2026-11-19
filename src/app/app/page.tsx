@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+import heroImage from "../../../public/images/hero.webp";
 import { useQuery } from "convex/react";
 import Link from "next/link";
 import { api } from "../../../convex/_generated/api";
@@ -55,9 +57,10 @@ export default function ClientHome() {
       <section aria-label="Get started" className="flex flex-col gap-4">
         <Link
           href="/app/events/new"
-          className="relative flex min-h-[220px] flex-col justify-end overflow-hidden rounded-[24px] bg-dusk p-5 text-white shadow-card"
+          className="group relative isolate flex min-h-[220px] flex-col justify-end overflow-hidden rounded-[24px] bg-navy-900 p-5 text-white shadow-card lg:min-h-[280px] lg:p-8"
         >
-          <span aria-hidden="true" className="absolute inset-0 bg-gradient-to-b from-navy-900/0 to-navy-900/75" />
+          <Image src={heroImage} alt="" fill placeholder="blur" sizes="(min-width: 1024px) 900px, 100vw" className="-z-10 object-cover transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none" />
+          <span aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-b from-navy-900/10 to-navy-900/85" />
           <span className="absolute top-4 left-4 rounded-full bg-navy-900/55 px-3 py-1 text-xs font-medium">
             Step by step
           </span>

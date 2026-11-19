@@ -23,7 +23,7 @@ export default function MyEvents() {
           <LinkButton href="/app/events/new" className="mt-4">Plan an event</LinkButton>
         </div>
       ) : (
-        <ul className="flex flex-col gap-3">
+        <ul className="grid gap-3 md:grid-cols-2">
           {events.map((e) => {
             const href = e.status === "draft" ? `/app/events/${e._id}/setup` : `/app/events/${e._id}`;
             return (
