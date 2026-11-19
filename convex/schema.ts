@@ -36,6 +36,8 @@ export default defineSchema({
     deletedAt: v.optional(v.number()),
     // Versions of the Terms and Privacy Policy this person accepted (A-09 #3).
     acceptedTermsVersion: v.optional(v.number()),
+    // Set when the person clicks the link in the verification email (C-01 #1).
+    emailVerifiedAt: v.optional(v.number()),
     acceptedPrivacyVersion: v.optional(v.number()),
   })
     .index("by_email", ["email"])
@@ -307,6 +309,20 @@ export default defineSchema({
     permissions: v.array(v.string()),
     createdAt: v.number(),
   }).index("by_key", ["key"]),
+
+  // Email verification links (C-01 #1). Only a hash of the token is stored.
+  emailVerifications: defineTable({
+    userId: v.id("users"),
+    tokenHash: v.string(),
+    expiresAt: v.number(),
+    usedAt: v.optional(v.number()),
+    createdAt: v.number(),
+  })
+    .index("by_token", ["tokenHash"])
+    .index("by_user", ["userId", "createdAt"]),
+
+  // Address lookups per minute, so the public search can't flood the geocoder.
+  geocodeQuota: defineTable({ key: v.string(), windowStart: v.number(), count: v.number() }).index("by_key", ["key"]),
 
   // Password reset links (sent by email). Only a hash of the token is stored.
   passwordResets: defineTable({

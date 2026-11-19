@@ -6,6 +6,7 @@ import { useState } from "react";
 import { api } from "../../../convex/_generated/api";
 import { authErrorMessage } from "@/components/auth/auth-errors";
 import { Button } from "@/components/ui/button";
+import { takeNext } from "@/lib/next-path";
 import { FormAlert, TextField } from "@/components/ui/field";
 
 export function SignInForm() {
@@ -23,7 +24,7 @@ export function SignInForm() {
       password,
     });
     if (result.status === "complete") {
-      router.replace("/home");
+      router.replace(takeNext() ?? "/home");
       return;
     }
     // Suspended accounts are rejected by the server's onSignIn check (C-01).

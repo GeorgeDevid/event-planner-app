@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { api } from "../../../convex/_generated/api";
 import { homeFor } from "@/components/shell/role-gate";
+import { takeNext } from "@/lib/next-path";
 import { Button } from "@/components/ui/button";
 import { FormAlert, TextField } from "@/components/ui/field";
 import { FullPageLoader } from "@/components/ui/loader";
@@ -56,7 +57,7 @@ export function OnboardingForm() {
         companyName: accountType === "vendor" ? companyName : undefined,
         phone: accountType === "vendor" ? phone : undefined,
       });
-      router.replace(role === "vendor" ? "/vendor" : "/app");
+      router.replace(role === "vendor" ? "/vendor" : (takeNext("/app") ?? "/app"));
     } catch (err) {
       setError(
         err instanceof ConvexError && typeof err.data?.message === "string"

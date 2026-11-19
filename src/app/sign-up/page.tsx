@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
+import { RememberNext } from "@/components/auth/remember-next";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { SignUpForm } from "./sign-up-form";
 
@@ -12,6 +14,9 @@ export default function SignUpPage() {
       <p className="mt-1 text-sm text-ink-2">
         Plan an event, or list your business as a vendor.
       </p>
+      <Suspense fallback={null}>
+        <RememberNext />
+      </Suspense>
       <SignUpForm />
       <p className="mt-4 text-center text-xs text-ink-2">
         By creating an account you agree to our{" "}

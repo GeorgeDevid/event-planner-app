@@ -45,7 +45,10 @@ export default function Landing() {
               Let&apos;s plan
               <ArrowBadge tone="dark" />
             </LinkButton>
-            <LinkButton href="/sign-up" variant="secondary" className="border-none">
+            <LinkButton href="/vendors" variant="secondary" className="border-none">
+              Browse vendors
+            </LinkButton>
+            <LinkButton href="/sign-up" variant="ghost" className="text-white hover:bg-white/10">
               List your business
             </LinkButton>
           </div>

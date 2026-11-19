@@ -1,5 +1,6 @@
 import { ConvexError, v } from "convex/values";
-import { action } from "./_generated/server";
+import { internal } from "./_generated/api";
+import { action, internalMutation } from "./_generated/server";
 
 /**
  * Turn an address or postal code into map coordinates (V-02, later C-03/C-04).
@@ -12,12 +13,18 @@ import { action } from "./_generated/server";
 export const search = action({
   args: { query: v.string() },
   handler: async (ctx, { query }) => {
+    // Visitors can search too (C-01 #6). Signed-in people get their own
+    // allowance; all visitors share one, to protect the free geocoder.
     const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new ConvexError({ code: "UNAUTHENTICATED", message: "Please log in." });
-    }
     const q = query.trim();
-    if (q.length < 3) return [];
+    if (q.length < 3 || q.length > 200) return [];
+    const ok = await ctx.runMutation(internal.geocode.takeQuota, {
+      key: identity ? `user:${identity.subject}` : "guests",
+      limit: identity ? 20 : 60,
+    });
+    if (!ok) {
+      throw new ConvexError({ code: "RATE_LIMITED", message: "Too many address lookups right now. Wait a minute and try again." });
+    }
 
     const url = new URL("https://nominatim.openstreetmap.org/search");
     url.searchParams.set("q", q);
@@ -48,5 +55,22 @@ export const search = action({
       lat: Number(row.lat),
       lng: Number(row.lon),
     }));
+  },
+});
+
+/** Fixed one-minute windows: true while the key is under its limit. */
+export const takeQuota = internalMutation({
+  args: { key: v.string(), limit: v.number() },
+  handler: async (ctx, { key, limit }) => {
+    const now = Date.now();
+    const row = await ctx.db.query("geocodeQuota").withIndex("by_key", (q) => q.eq("key", key)).unique();
+    if (!row || now - row.windowStart >= 60_000) {
+      if (row) await ctx.db.patch(row._id, { windowStart: now, count: 1 });
+      else await ctx.db.insert("geocodeQuota", { key, windowStart: now, count: 1 });
+      return true;
+    }
+    if (row.count >= limit) return false;
+    await ctx.db.patch(row._id, { count: row.count + 1 });
+    return true;
   },
 });

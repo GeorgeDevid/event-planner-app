@@ -156,14 +156,14 @@ export function LocationForm({ vendor, submitLabel, onSaved }: FormProps) {
     setAddressError(null);
     setResults(null);
     if (address.trim().length < 3) {
-      setAddressError("Enter a street address or postal code.");
+      setAddressError("Enter your street address and city.");
       return;
     }
     setSearching(true);
     try {
       const found = await geocode({ query: address });
       if (found.length === 0) {
-        setAddressError("We couldn't find that address. Check it, or try your postal code.");
+        setAddressError("We couldn't find that address. Check the spelling, and include the street and city (postal codes can't be looked up yet).");
       } else if (found.length === 1) {
         setPoint({ lat: found[0].lat, lng: found[0].lng });
       } else {

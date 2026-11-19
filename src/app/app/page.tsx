@@ -4,6 +4,7 @@ import { useQuery } from "convex/react";
 import Link from "next/link";
 import { api } from "../../../convex/_generated/api";
 import { useMe } from "@/components/shell/role-gate";
+import { VerifyEmailBanner } from "@/components/auth/verify-banner";
 import { HomeBanners } from "@/components/content/banners";
 import { NotificationBell } from "@/components/messaging/notifications";
 import { ArrowBadge } from "@/components/ui/button";
@@ -42,6 +43,7 @@ export default function ClientHome() {
         <NotificationBell href="/app/notifications" />
       </header>
 
+      <VerifyEmailBanner />
       <HomeBanners />
 
       <h1 className="text-[28px] leading-[34px] font-bold tracking-tight">

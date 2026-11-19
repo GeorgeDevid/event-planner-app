@@ -4,6 +4,7 @@ import type { Doc } from "./_generated/dataModel";
 import { mutation, type MutationCtx } from "./_generated/server";
 import { audit, requirePermission, requireUser } from "./lib/access";
 import { sendEmail } from "./lib/email";
+import { randomToken, sha256 } from "./lib/tokens";
 
 const MESSAGES: Record<string, string> = {
   PASSWORD_TOO_SHORT: "Use at least 10 characters.",
@@ -57,10 +58,6 @@ export const changePassword = mutation({
 
 const RESET_TTL_MS = 60 * 60 * 1000;
 
-async function sha256(text: string) {
-  const bytes = new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text)));
-  return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
-}
 
 /**
  * Always answers the same way, so it can't be used to find out whether an
@@ -139,9 +136,7 @@ export async function issueReset(ctx: MutationCtx, user: Doc<"users">) {
     // Only the newest link works.
     for (const r of recent) if (!r.usedAt) await ctx.db.patch(r._id, { usedAt: now });
 
-    const raw = new Uint8Array(32);
-    crypto.getRandomValues(raw);
-    const token = Array.from(raw, (b) => b.toString(16).padStart(2, "0")).join("");
+    const token = randomToken();
     await ctx.db.insert("passwordResets", {
       userId: user._id,
       tokenHash: await sha256(token),

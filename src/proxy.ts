@@ -15,7 +15,8 @@ const matches = (pathname: string, prefixes: string[]) =>
 export const proxy = convexAuthNextjsProxy(async (request, ctx) => {
   const { pathname } = request.nextUrl;
   if (matches(pathname, PROTECTED) && !(await ctx.isAuthenticated())) {
-    return nextjsProxyRedirect(request, "/sign-in");
+    const wanted = pathname + request.nextUrl.search;
+    return nextjsProxyRedirect(request, `/sign-in?next=${encodeURIComponent(wanted)}`);
   }
   if (matches(pathname, GUEST_ONLY) && (await ctx.isAuthenticated())) {
     return nextjsProxyRedirect(request, "/home");

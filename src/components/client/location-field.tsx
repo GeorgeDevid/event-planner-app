@@ -10,8 +10,11 @@ import { shortAddress } from "@/lib/format";
 
 export type Place = { address: string; lat: number; lng: number };
 
+// Canadian postal codes (full or first three characters).
+const POSTAL_CODE = /^[A-Za-z]\d[A-Za-z][ -]?(\d[A-Za-z]\d)?$/;
+
 /**
- * Address or postal code lookup, with an optional "Use my current location"
+ * Street address or city lookup, with an optional "Use my current location"
  * button (C-03 #1-2, C-04 #5). Calls onChange with the found place, or null
  * while the text no longer matches a found place.
  */
@@ -42,13 +45,19 @@ export function LocationField({
     setLookupError(null);
     setResults(null);
     if (text.trim().length < 3) {
-      setLookupError("Enter an address or postal code.");
+      setLookupError("Enter a street address or city.");
       return;
     }
     setBusy("search");
     try {
       const found = await geocode({ query: text });
-      if (found.length === 0) setLookupError("We couldn't find that. Check it, or try a postal code.");
+      if (found.length === 0) {
+        setLookupError(
+          POSTAL_CODE.test(text.trim())
+            ? "Postal codes can't be looked up yet. Enter a street address or city instead."
+            : "We couldn't find that. Check the spelling, or try the street and city.",
+        );
+      }
       else if (found.length === 1) choose(found[0]);
       else setResults(found);
     } catch (err) {
@@ -67,7 +76,7 @@ export function LocationField({
   function useCurrentLocation() {
     setLookupError(null);
     if (!("geolocation" in navigator)) {
-      setLookupError("Location isn't available on this device. Enter a postal code or address instead.");
+      setLookupError("Location isn't available on this device. Enter a street address or city instead.");
       return;
     }
     setBusy("gps");
@@ -79,7 +88,7 @@ export function LocationField({
       },
       () => {
         setBusy(null);
-        setLookupError("We couldn't get your location. Enter a postal code or address instead.");
+        setLookupError("We couldn't get your location. Enter a street address or city instead.");
       },
       { enableHighAccuracy: false, timeout: 10_000, maximumAge: 300_000 },
     );
@@ -94,7 +103,7 @@ export function LocationField({
           id={id}
           label={label}
           className="flex-1"
-          autoComplete="postal-code"
+          autoComplete="street-address"
           value={text}
           error={shownError}
           helper={value ? `Found: ${shortAddress(value.address)}` : helper}

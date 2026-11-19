@@ -53,6 +53,7 @@ export function VendorResults({
   defaultBudget,
   savedIds = [],
   serviceName,
+  profileBase = "/app/vendors",
 }: {
   categoryId: Id<"categories">;
   point: { lat: number; lng: number };
@@ -60,6 +61,7 @@ export function VendorResults({
   defaultBudget?: { min: number | null; max: number | null };
   savedIds?: Id<"vendors">[];
   serviceName: string;
+  profileBase?: string;
 }) {
   const [params, setParams] = useQueryState();
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -174,7 +176,7 @@ export function VendorResults({
             .sort((a, b) => Number(savedIds.includes(b._id)) - Number(savedIds.includes(a._id)))
             .map((r) => (
             <li key={r._id}>
-              <VendorCard vendor={r} saved={savedIds.includes(r._id)} />
+              <VendorCard vendor={r} saved={savedIds.includes(r._id)} href={`${profileBase}/${r._id}`} />
             </li>
           ))}
         </ul>
@@ -271,10 +273,10 @@ function BudgetFilters({
 }
 
 /** C-09 vendor card: cover, service type, vendor and company name, average price, distance. */
-export function VendorCard({ vendor, saved = false }: { vendor: Result; saved?: boolean }) {
+export function VendorCard({ vendor, saved = false, href }: { vendor: Result; saved?: boolean; href?: string }) {
   return (
     <Link
-      href={`/app/vendors/${vendor._id}`}
+      href={href ?? `/app/vendors/${vendor._id}`}
       className="block overflow-hidden rounded-[24px] bg-surface shadow-card transition-transform active:scale-[0.99]"
     >
       <div className="relative h-[160px] bg-dusk">

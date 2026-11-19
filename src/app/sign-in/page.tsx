@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { RememberNext } from "@/components/auth/remember-next";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { Suspense } from "react";
 import { IdleNotice } from "./idle-notice";
@@ -14,6 +15,9 @@ export default function SignInPage() {
       <p className="mt-1 text-sm text-ink-2">Pick up where you left off.</p>
       <Suspense fallback={null}>
         <IdleNotice />
+      </Suspense>
+      <Suspense fallback={null}>
+        <RememberNext />
       </Suspense>
       <SignInForm />
       <p className="mt-4 text-center text-sm">

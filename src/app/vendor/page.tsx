@@ -7,6 +7,7 @@ import { ArrowBadge, LinkButton } from "@/components/ui/button";
 import { Card } from "@/components/ui/kit";
 import { FullPageLoader } from "@/components/ui/loader";
 import { VendorStatusPill } from "@/components/ui/status-pill";
+import { VerifyEmailBanner } from "@/components/auth/verify-banner";
 import { VendorStats } from "@/components/vendor/stats";
 import { useMyVendor } from "@/components/vendor/use-vendor";
 import { formatCents } from "@/lib/format";
@@ -92,6 +93,7 @@ export default function VendorDashboard() {
         )}
       </Card>
 
+      <VerifyEmailBanner />
       {vendor.status === "approved" || vendor.status === "suspended" ? <VendorStats /> : null}
 
       {remaining > 0 ? (

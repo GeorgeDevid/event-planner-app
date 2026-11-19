@@ -5,6 +5,7 @@ import {
   mutation,
   query,
 } from "./_generated/server";
+import { issueVerification } from "./emailVerification";
 import { audit, getCurrentUser, permissionsOf, requireUser } from "./lib/access";
 import { adminRole } from "./lib/validators";
 
@@ -94,6 +95,7 @@ export const me = query({
           }
         : null,
       permissions: [...(await permissionsOf(ctx, user))],
+      emailVerified: !!user.emailVerifiedAt,
     };
   },
 });
@@ -174,6 +176,8 @@ export const completeOnboarding = mutation({
       acceptedTermsVersion: await current("terms"),
       acceptedPrivacyVersion: await current("privacy"),
     });
+    const fresh = await ctx.db.get(user._id);
+    if (fresh) await issueVerification(ctx, fresh);
     return { role: args.accountType };
   },
 });
