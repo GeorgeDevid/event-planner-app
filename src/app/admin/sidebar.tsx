@@ -56,7 +56,10 @@ export function AdminSidebar() {
   const can = (p?: Permission) => !p || me.permissions.includes(p);
 
   const [open, setOpen] = useState(false);
-  const { containerRef, indicatorRef } = useLiquidIndicator<HTMLElement>(pathname, '[aria-current="page"]');
+  // Highlight the tapped link at once; the route catches up.
+  const [pending, setPending] = useState<{ href: string; from: string } | null>(null);
+  const highlighted = pending && pending.from === pathname ? pending.href : pathname;
+  const { containerRef, indicatorRef } = useLiquidIndicator<HTMLElement>(highlighted, "[data-active]");
 
   return (
     <aside className="sticky top-0 z-30 flex w-full flex-col gap-6 bg-navy-900 px-5 py-4 text-white lg:h-dvh lg:w-60 lg:flex-[0_0_240px] lg:overflow-y-auto lg:p-6">
@@ -87,18 +90,22 @@ export function AdminSidebar() {
             <div key={group.title} className="relative flex flex-col gap-1">
               <p className="px-3 text-xs font-semibold text-on-navy-2">{group.title}</p>
               {items.map((item) => {
-                const active = pathname === item.href;
+                const active = highlighted === item.href;
                 return (
                   <Link
                     key={item.href}
                     href={item.href}
-                    onClick={() => setOpen(false)}
-                    aria-current={active ? "page" : undefined}
-                    className={`press flex min-h-11 items-center gap-2 rounded-full px-3 text-sm font-medium duration-300 ${
+                    onClick={(e) => {
+                      setOpen(false);
+                      if (e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey) setPending({ href: item.href, from: pathname });
+                    }}
+                    aria-current={pathname === item.href ? "page" : undefined}
+                    data-active={active ? "" : undefined}
+                    className={`press flex min-h-11 items-center gap-2 rounded-full px-3 text-sm font-medium duration-200 ${
                       active ? "text-gold-300" : "text-white hover:bg-navy-700/60"
                     }`}
                   >
-                    <span aria-hidden="true" className={`size-1.5 rounded-full bg-gold-500 transition-opacity duration-300 ${active ? "opacity-100" : "opacity-0"}`} />
+                    <span aria-hidden="true" className={`size-1.5 rounded-full bg-gold-500 transition-opacity duration-200 ${active ? "opacity-100" : "opacity-0"}`} />
                     {item.label}
                   </Link>
                 );

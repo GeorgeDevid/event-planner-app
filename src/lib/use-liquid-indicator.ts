@@ -4,7 +4,7 @@ import { useLayoutEffect, useRef } from "react";
 
 type Box = { l: number; t: number; r: number; b: number };
 
-const DURATION = 520;
+const DURATION = 340;
 // Leading edge: quick and decisive. Trailing edge: catches up and settles.
 const LEAD = "cubic-bezier(0.32, 0.72, 0, 1)";
 const SETTLE = "cubic-bezier(0.23, 1, 0.32, 1)";
@@ -84,7 +84,7 @@ export function useLiquidIndicator<T extends HTMLElement>(activeKey: string | nu
     anim.current = indicator.animate(
       [
         { clipPath: clip(from), easing: LEAD },
-        { clipPath: clip(mid), offset: 0.4, easing: SETTLE },
+        { clipPath: clip(mid), offset: 0.45, easing: SETTLE },
         { clipPath: clip(to) },
       ],
       { duration: DURATION },

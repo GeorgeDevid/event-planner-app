@@ -3,7 +3,7 @@
 import { useQuery } from "convex/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { ReactNode } from "react";
+import { useState, type MouseEvent, type ReactNode } from "react";
 import { api } from "../../../convex/_generated/api";
 import { useLiquidIndicator } from "@/lib/use-liquid-indicator";
 
@@ -15,14 +15,29 @@ export function activeIndex(pathname: string, items: NavItem[]) {
   );
 }
 
+/** A plain left click (not opening in a new tab or window). */
+export const isPlainClick = (e: MouseEvent) => e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey;
+
+/**
+ * The tab to highlight. Follows the route, but jumps to a tapped tab right
+ * away, so the highlight moves on tap instead of after the next page loads.
+ */
+export function useOptimisticTab(items: NavItem[], pathname: string) {
+  const [pending, setPending] = useState<{ index: number; from: string } | null>(null);
+  const routeIndex = activeIndex(pathname, items);
+  const current = pending && pending.from === pathname ? pending.index : routeIndex;
+  return { current, select: (index: number) => setPending({ index, from: pathname }) };
+}
+
 /**
  * Floating bottom tab bar (phones). Equal-width tabs, icon over label; a navy
  * pill flows between tabs as you switch (Dusk & Gold).
  */
 export function BottomNav({ items, label }: { items: NavItem[]; label: string }) {
   const pathname = usePathname();
-  const current = activeIndex(pathname, items);
-  const { containerRef, indicatorRef } = useLiquidIndicator<HTMLUListElement>(current, '[aria-current="page"]');
+  const { current, select } = useOptimisticTab(items, pathname);
+  const onRoute = activeIndex(pathname, items);
+  const { containerRef, indicatorRef } = useLiquidIndicator<HTMLUListElement>(current, "[data-active]");
   // Unread messages across my conversations (C-13 #2).
   const unread = useQuery(api.inquiries.unreadCount, items.some((i) => i.unreadBadge) ? {} : "skip") ?? 0;
   return (
@@ -38,8 +53,10 @@ export function BottomNav({ items, label }: { items: NavItem[]; label: string })
             <li key={item.href} className="relative flex-1">
               <Link
                 href={item.href}
-                aria-current={active ? "page" : undefined}
-                className={`press flex min-h-14 flex-col items-center justify-center gap-0.5 rounded-full px-2 text-[11px] font-semibold duration-300 ${
+                aria-current={i === onRoute ? "page" : undefined}
+                data-active={active ? "" : undefined}
+                onClick={(e) => isPlainClick(e) && select(i)}
+                className={`press flex min-h-14 flex-col items-center justify-center gap-0.5 rounded-full px-2 text-[11px] font-semibold duration-200 ${
                   active ? "text-white" : "text-ink-2"
                 }`}
               >

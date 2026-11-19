@@ -3,7 +3,7 @@
 import { useLingering } from "@/lib/use-lingering";
 import { useLiquidIndicator } from "@/lib/use-liquid-indicator";
 import Link from "next/link";
-import { useEffect, useRef, type ComponentProps, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ComponentProps, type ReactNode } from "react";
 
 export function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
@@ -58,7 +58,7 @@ export function Stepper({ step, total, label }: { step: number; total: number; l
         className="h-1.5 w-full overflow-hidden rounded-full bg-surface-2"
       >
         <div
-          className="h-full rounded-full bg-gold-500 transition-[width] duration-300"
+          className="h-full rounded-full bg-gold-500 transition-[width] duration-200"
           style={{ width: `${(step / total) * 100}%` }}
         />
       </div>
@@ -115,7 +115,10 @@ export function Segmented<T extends string>({
   options: { value: T; label: string }[];
   label: string;
 }) {
-  const { containerRef, indicatorRef } = useLiquidIndicator<HTMLDivElement>(value, '[aria-checked="true"]');
+  // Show the tapped option at once, even if the parent updates a moment later (e.g. via the URL).
+  const [pending, setPending] = useState<{ value: T; from: T } | null>(null);
+  const selected = pending && pending.from === value ? pending.value : value;
+  const { containerRef, indicatorRef } = useLiquidIndicator<HTMLDivElement>(selected, '[aria-checked="true"]');
   return (
     <div ref={containerRef} role="radiogroup" aria-label={label} className="relative flex gap-1 rounded-full bg-surface-2 p-1">
       <span ref={indicatorRef} aria-hidden="true" className="liquid-indicator bg-navy-900" />
@@ -124,10 +127,13 @@ export function Segmented<T extends string>({
           key={o.value}
           type="button"
           role="radio"
-          aria-checked={value === o.value}
-          onClick={() => onChange(o.value)}
-          className={`press relative min-h-10 flex-1 rounded-full px-3 text-sm font-semibold duration-300 ${
-            value === o.value ? "text-white" : "text-ink-2"
+          aria-checked={selected === o.value}
+          onClick={() => {
+            if (o.value !== selected) setPending({ value: o.value, from: value });
+            onChange(o.value);
+          }}
+          className={`press relative min-h-10 flex-1 rounded-full px-3 text-sm font-semibold duration-200 ${
+            selected === o.value ? "text-white" : "text-ink-2"
           }`}
         >
           {o.label}
@@ -196,7 +202,7 @@ export function Sheet({
   children: ReactNode;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
-  const showContent = useLingering(open, 450);
+  const showContent = useLingering(open, 360);
   useEffect(() => {
     const dialog = ref.current;
     if (!dialog) return;

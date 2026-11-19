@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, type CSSProperties, type ReactNode } from "react";
 import { api } from "../../../convex/_generated/api";
-import { activeIndex, BottomNav, type NavItem } from "@/components/shell/bottom-nav";
+import { activeIndex, BottomNav, isPlainClick, useOptimisticTab, type NavItem } from "@/components/shell/bottom-nav";
 import { SignOutButton } from "@/components/shell/sign-out-button";
 import { useMe } from "@/components/shell/role-gate";
 import { Logo } from "@/components/ui/logo";
@@ -62,8 +62,9 @@ export function AppShell({
 
 function SideNav({ items, label, logoSuffix }: { items: NavItem[]; label: string; logoSuffix?: string }) {
   const pathname = usePathname();
-  const current = activeIndex(pathname, items);
-  const { containerRef, indicatorRef } = useLiquidIndicator<HTMLUListElement>(current, '[aria-current="page"]');
+  const { current, select } = useOptimisticTab(items, pathname);
+  const onRoute = activeIndex(pathname, items);
+  const { containerRef, indicatorRef } = useLiquidIndicator<HTMLUListElement>(current, "[data-active]");
   const me = useMe();
   const unread = useQuery(api.inquiries.unreadCount, items.some((i) => i.unreadBadge) ? {} : "skip") ?? 0;
   return (
@@ -81,8 +82,10 @@ function SideNav({ items, label, logoSuffix }: { items: NavItem[]; label: string
               <li key={item.href} className="relative">
                 <Link
                   href={item.href}
-                  aria-current={active ? "page" : undefined}
-                  className={`press flex min-h-11 items-center gap-3 rounded-full px-4 text-sm font-semibold duration-300 ${
+                  aria-current={i === onRoute ? "page" : undefined}
+                  data-active={active ? "" : undefined}
+                  onClick={(e) => isPlainClick(e) && select(i)}
+                  className={`press flex min-h-11 items-center gap-3 rounded-full px-4 text-sm font-semibold duration-200 ${
                     active ? "text-navy-900" : "text-on-navy-2 hover:bg-white/10 hover:text-white"
                   }`}
                 >

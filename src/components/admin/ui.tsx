@@ -113,7 +113,7 @@ export function Tabs<T extends string>({
             type="button"
             aria-selected={active}
             onClick={() => onChange(t.value)}
-            className={`press relative flex min-h-11 items-center gap-2 rounded-full px-4 text-sm font-semibold duration-300 ${
+            className={`press relative flex min-h-11 items-center gap-2 rounded-full px-4 text-sm font-semibold duration-200 ${
               active ? "z-[2] text-white" : "z-0 bg-surface text-navy-900 shadow-card hover:bg-surface-2"
             }`}
           >
@@ -174,7 +174,7 @@ export function Drawer({
   children: ReactNode;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
-  const showContent = useLingering(open, 400);
+  const showContent = useLingering(open, 320);
   useEffect(() => {
     const d = ref.current;
     if (!d) return;

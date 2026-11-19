@@ -116,7 +116,7 @@
 /* Press feedback for anything tappable. Cards use the softer one. */
 @utility press {
   transition-property: transform, background-color, border-color, color, box-shadow, opacity;
-  transition-duration: 160ms;
+  transition-duration: 120ms;
   transition-timing-function: var(--ease-out);
   &:active:not(:disabled):not([aria-disabled="true"]) {
     transform: scale(0.97);
@@ -124,7 +124,7 @@
 }
 @utility press-soft {
   transition-property: transform, box-shadow;
-  transition-duration: 200ms;
+  transition-duration: 160ms;
   transition-timing-function: var(--ease-out);
   &:active {
     transform: scale(0.985);
@@ -144,8 +144,8 @@
 @utility pop-in {
   transform-origin: top center;
   transition:
-    opacity 180ms var(--ease-out),
-    transform 180ms var(--ease-out);
+    opacity 150ms var(--ease-out),
+    transform 150ms var(--ease-out);
   @starting-style {
     opacity: 0;
     transform: translateY(-4px) scale(0.98);
@@ -156,11 +156,11 @@
 @keyframes page-in {
   from {
     opacity: 0;
-    transform: translate(var(--page-dx, 0px), var(--page-dy, 8px));
+    transform: translate(var(--page-dx, 0px), var(--page-dy, 6px));
   }
 }
 @utility page-in {
-  animation: page-in 320ms var(--ease-out) backwards;
+  animation: page-in 220ms var(--ease-out) backwards;
 }
 
 /* Lists the user sees occasionally (search results, events): staggered rise. */
@@ -172,14 +172,14 @@
 }
 @utility stagger {
   & > * {
-    animation: rise 320ms var(--ease-out) backwards;
+    animation: rise 260ms var(--ease-out) backwards;
   }
-  & > :nth-child(2) { animation-delay: 40ms; }
-  & > :nth-child(3) { animation-delay: 80ms; }
-  & > :nth-child(4) { animation-delay: 120ms; }
-  & > :nth-child(5) { animation-delay: 160ms; }
-  & > :nth-child(6) { animation-delay: 200ms; }
-  & > :nth-child(n + 7) { animation-delay: 240ms; }
+  & > :nth-child(2) { animation-delay: 30ms; }
+  & > :nth-child(3) { animation-delay: 60ms; }
+  & > :nth-child(4) { animation-delay: 90ms; }
+  & > :nth-child(5) { animation-delay: 120ms; }
+  & > :nth-child(6) { animation-delay: 150ms; }
+  & > :nth-child(n + 7) { animation-delay: 180ms; }
 }
 
 /* Landing page: hero entrance on load, sections rise in once when scrolled to. */
@@ -217,10 +217,10 @@
  */
 @utility dialog-sheet {
   transition:
-    transform 450ms var(--ease-drawer),
-    opacity 250ms var(--ease-out),
-    overlay 450ms var(--ease-drawer) allow-discrete,
-    display 450ms var(--ease-drawer) allow-discrete;
+    transform 360ms var(--ease-drawer),
+    opacity 200ms var(--ease-out),
+    overlay 360ms var(--ease-drawer) allow-discrete,
+    display 360ms var(--ease-drawer) allow-discrete;
   transform: translateY(100%);
   &[open] {
     transform: translateY(0);
@@ -232,10 +232,10 @@
   }
   @media (width >= 40rem) {
     transition:
-      transform 250ms var(--ease-out),
-      opacity 250ms var(--ease-out),
-      overlay 250ms var(--ease-out) allow-discrete,
-      display 250ms var(--ease-out) allow-discrete;
+      transform 200ms var(--ease-out),
+      opacity 200ms var(--ease-out),
+      overlay 200ms var(--ease-out) allow-discrete,
+      display 200ms var(--ease-out) allow-discrete;
     opacity: 0;
     transform: scale(0.96);
     &[open] {
@@ -252,10 +252,10 @@
 }
 @utility dialog-modal {
   transition:
-    transform 250ms var(--ease-out),
-    opacity 250ms var(--ease-out),
-    overlay 250ms var(--ease-out) allow-discrete,
-    display 250ms var(--ease-out) allow-discrete;
+    transform 200ms var(--ease-out),
+    opacity 200ms var(--ease-out),
+    overlay 200ms var(--ease-out) allow-discrete,
+    display 200ms var(--ease-out) allow-discrete;
   opacity: 0;
   transform: scale(0.96);
   &[open] {
@@ -271,9 +271,9 @@
 }
 @utility dialog-drawer {
   transition:
-    transform 400ms var(--ease-drawer),
-    overlay 400ms var(--ease-drawer) allow-discrete,
-    display 400ms var(--ease-drawer) allow-discrete;
+    transform 320ms var(--ease-drawer),
+    overlay 320ms var(--ease-drawer) allow-discrete,
+    display 320ms var(--ease-drawer) allow-discrete;
   transform: translateX(100%);
   &[open] {
     transform: translateX(0);
@@ -303,9 +303,9 @@
 @utility backdrop-fade {
   &::backdrop {
     transition:
-      opacity 300ms var(--ease-out),
-      overlay 300ms var(--ease-out) allow-discrete,
-      display 300ms var(--ease-out) allow-discrete;
+      opacity 240ms var(--ease-out),
+      overlay 240ms var(--ease-out) allow-discrete,
+      display 240ms var(--ease-out) allow-discrete;
     opacity: 0;
   }
   &[open]::backdrop {
