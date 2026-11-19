@@ -126,6 +126,8 @@ export const publicProfile = query({
       verified: vendor.verified,
       featured: vendor.featured,
       avgPriceCents: vendor.avgPriceCents ?? null,
+      ratingAverage: vendor.ratingCount ? Math.round(((vendor.ratingSum ?? 0) / vendor.ratingCount) * 10) / 10 : null,
+      ratingCount: vendor.ratingCount ?? 0,
       categories: categories.filter((c) => c !== null).map((c) => c.name),
       categoryOptions: categories
         .filter((c) => c !== null && c.active)

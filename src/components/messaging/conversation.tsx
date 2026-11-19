@@ -76,7 +76,7 @@ export function Conversation({ inquiryId, backHref }: { inquiryId: Id<"inquiries
       {thread.bookings.length > 0 ? (
         <section aria-label="Bookings" className="flex flex-col gap-2">
           {thread.bookings.map((b) => (
-            <BookingCard key={b._id} booking={b} role={thread.role} />
+            <BookingCard key={b._id} booking={b} role={thread.role} vendorId={thread.vendor._id} />
           ))}
         </section>
       ) : null}
@@ -341,7 +341,7 @@ function QuoteForm({ thread, onDone }: { thread: Thread; onDone: () => void }) {
   );
 }
 
-function BookingCard({ booking: b, role }: { booking: Booking; role: Thread["role"] }) {
+function BookingCard({ booking: b, role, vendorId }: { booking: Booking; role: Thread["role"]; vendorId: Id<"vendors"> }) {
   const respond = useMutation(api.bookings.respond);
   const complete = useMutation(api.bookings.complete);
   const cancel = useMutation(api.bookings.cancel);
@@ -390,6 +390,11 @@ function BookingCard({ booking: b, role }: { booking: Booking; role: Thread["rol
         ) : null}
         {role === "vendor" && b.status === "accepted" && b.past ? (
           <Button type="button" variant="navy" className="min-h-10 px-4 text-sm" onClick={() => run(() => complete({ bookingId: b._id }))}>Mark completed</Button>
+        ) : null}
+        {role === "client" && (b.status === "completed" || (b.status === "accepted" && b.past)) ? (
+          <LinkButton href={`/app/vendors/${vendorId}?review=1`} variant={b.reviewed ? "secondary" : "gold"} className="min-h-10 px-4 text-sm">
+            {b.reviewed ? "Edit your review" : "Rate this vendor"}
+          </LinkButton>
         ) : null}
         {(role === "client" && (b.status === "pending" || b.status === "accepted")) || (role === "vendor" && b.status === "accepted") ? (
           <Button type="button" variant="ghost" className="min-h-10 px-3 text-sm text-danger" onClick={() => setSheet("cancel")}>Cancel booking</Button>

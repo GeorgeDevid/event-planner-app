@@ -103,6 +103,9 @@ export default defineSchema({
     // Mean of active package prices, kept up to date by the packages
     // mutations so search and cards never compute it on the fly (C-09, V-04).
     avgPriceCents: v.optional(v.number()),
+    // Visible client reviews, kept up to date by convex/reviews.ts.
+    ratingSum: v.optional(v.number()),
+    ratingCount: v.optional(v.number()),
     createdAt: v.number(),
   })
     .index("by_owner", ["ownerId"])
@@ -277,6 +280,25 @@ export default defineSchema({
     order: v.number(),
     updatedAt: v.number(),
   }).index("by_order", ["order"]),
+
+  // Client reviews of vendors: one per booking, after the service date.
+  reviews: defineTable({
+    vendorId: v.id("vendors"),
+    clientId: v.id("users"),
+    bookingId: v.id("bookings"),
+    rating: v.number(),
+    body: v.optional(v.string()),
+    hidden: v.boolean(),
+    hiddenReason: v.optional(v.string()),
+    reply: v.optional(v.string()),
+    repliedAt: v.optional(v.number()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_vendor", ["vendorId", "createdAt"])
+    .index("by_booking", ["bookingId"])
+    .index("by_client", ["clientId"])
+    .index("by_created", ["createdAt"]),
 
   // App reviews shown on the landing page, entered and curated by admins.
   testimonials: defineTable({

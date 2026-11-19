@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { ReportSheet } from "@/components/messaging/report-sheet";
+import { VendorReviews } from "@/components/reviews/vendor-reviews";
 import { LinkButton } from "@/components/ui/button";
 import { Sheet, Switch } from "@/components/ui/kit";
 import { FullPageLoader } from "@/components/ui/loader";
@@ -69,11 +70,14 @@ export function VendorProfilePage({ guest = false }: { guest?: boolean }) {
           </>
         }
         footer={
-          guest ? null : (
-            <button type="button" onClick={() => setReporting(true)} className="min-h-11 self-start text-sm font-semibold text-ink-2 underline-offset-4 hover:underline">
-              Report this vendor
-            </button>
-          )
+          <>
+            <VendorReviews vendorId={id} allowWrite={!guest} />
+            {guest ? null : (
+              <button type="button" onClick={() => setReporting(true)} className="min-h-11 self-start text-sm font-semibold text-ink-2 underline-offset-4 hover:underline">
+                Report this vendor
+              </button>
+            )}
+          </>
         }
         actions={
           <>

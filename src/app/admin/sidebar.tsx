@@ -30,6 +30,7 @@ const GROUPS: { title: string; items: Item[] }[] = [
     title: "Content",
     items: [
       { href: "/admin/moderation", label: "Moderation", permission: "reports:view" },
+      { href: "/admin/reviews", label: "Vendor reviews", permission: "reports:view" },
       { href: "/admin/content", label: "Site content", permission: "content:view" },
     ],
   },

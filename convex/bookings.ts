@@ -268,7 +268,8 @@ export const complete = mutation({
     await record(ctx, inquiry, booking._id, `${vendor.companyName} marked the booking as completed.`);
     await notify(ctx, booking.clientId, {
       title: `Booking with ${vendor.companyName} completed`,
-      href: inquiry ? `/app/messages/${inquiry._id}` : undefined,
+      body: "How did it go? Leave a star rating to help other clients.",
+      href: `/app/vendors/${vendor._id}?review=1`,
     });
   },
 });

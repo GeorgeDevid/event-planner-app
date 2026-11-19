@@ -7,6 +7,7 @@ import { ArrowBadge, LinkButton } from "@/components/ui/button";
 import { Card } from "@/components/ui/kit";
 import { FullPageLoader } from "@/components/ui/loader";
 import { VendorStatusPill } from "@/components/ui/status-pill";
+import { Stars } from "@/components/ui/stars";
 import { VerifyEmailBanner } from "@/components/auth/verify-banner";
 import { VendorStats } from "@/components/vendor/stats";
 import { useMyVendor } from "@/components/vendor/use-vendor";
@@ -131,7 +132,7 @@ export default function VendorDashboard() {
         </Card>
       ) : null}
 
-      <section aria-label="Shortcuts" className="grid grid-cols-2 gap-3">
+      <section aria-label="Shortcuts" className="grid grid-cols-2 gap-3 lg:grid-cols-3">
         <Link href="/vendor/packages" className="flex flex-col gap-2 rounded-[20px] bg-navy-900 p-4 text-white shadow-card">
           <span className="text-xs text-on-navy-2">Average price</span>
           <span className="text-[22px] font-bold text-gold-300">
@@ -148,6 +149,20 @@ export default function VendorDashboard() {
             <span className="text-sm font-medium text-ink-2"> / {vendor.maxPortfolio}</span>
           </span>
           <span className="text-sm text-ink-2">photos</span>
+        </Link>
+        <Link href="/vendor/reviews" className="col-span-2 flex flex-col gap-2 rounded-[20px] bg-surface p-4 shadow-card lg:col-span-1">
+          <span className="text-xs text-ink-2">Client reviews</span>
+          {vendor.ratingCount ? (
+            <span className="flex items-center gap-2">
+              <span className="text-[22px] font-bold">{((vendor.ratingSum ?? 0) / vendor.ratingCount).toFixed(1)}</span>
+              <Stars value={(vendor.ratingSum ?? 0) / vendor.ratingCount} size={16} />
+            </span>
+          ) : (
+            <span className="text-[22px] font-bold">No reviews yet</span>
+          )}
+          <span className="text-sm text-ink-2">
+            {vendor.ratingCount ? `${vendor.ratingCount} review${vendor.ratingCount === 1 ? "" : "s"} · reply to clients` : "Clients review you after their booking date"}
+          </span>
         </Link>
       </section>
 

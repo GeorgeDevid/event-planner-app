@@ -1,5 +1,6 @@
 "use client";
 
+import { Stars } from "@/components/ui/stars";
 import type { FunctionReturnType } from "convex/server";
 import Image from "next/image";
 import { useEffect, useRef, useState, type ReactNode } from "react";
@@ -40,6 +41,13 @@ export function VendorProfileView({
         <div className="absolute inset-x-5 bottom-10">
           <p className="text-xs font-semibold text-gold-300">{profile.categories.join(" · ")}</p>
           <h1 className="font-display text-[36px] leading-[1.05] font-bold text-white lg:text-[52px]">{profile.companyName}</h1>
+          {profile.ratingCount > 0 && profile.ratingAverage !== null ? (
+            <p className="mt-1.5 flex items-center gap-2 text-sm text-white">
+              <Stars value={profile.ratingAverage} size={16} />
+              <span className="font-semibold">{profile.ratingAverage.toFixed(1)}</span>
+              <span className="text-white/80">({profile.ratingCount} review{profile.ratingCount === 1 ? "" : "s"})</span>
+            </p>
+          ) : null}
           {profile.verified ? (
             <p className="mt-1 inline-flex items-center gap-1.5 text-sm font-semibold text-gold-300">
               <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z" /><path d="M9 12l2 2 4-4" /></svg>

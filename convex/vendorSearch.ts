@@ -71,10 +71,12 @@ type VendorCard = {
   coverUrl: string | null;
   distanceKm: number;
   available: boolean | null;
+  ratingAverage: number | null;
+  ratingCount: number;
   createdAt: number;
 };
 
-const SORTS = ["nearest", "price_asc", "price_desc", "newest"] as const;
+const SORTS = ["nearest", "price_asc", "price_desc", "newest", "top_rated"] as const;
 
 /**
  * Approved vendors in a category near a point (C-03, C-07, C-08, C-09).
@@ -160,6 +162,8 @@ export const nearby = query({
         coverUrl: vendor.coverImageId ? await ctx.storage.getUrl(vendor.coverImageId) : null,
         distanceKm: Math.round(km * 10) / 10,
         available,
+        ratingAverage: vendor.ratingCount ? Math.round(((vendor.ratingSum ?? 0) / vendor.ratingCount) * 10) / 10 : null,
+        ratingCount: vendor.ratingCount ?? 0,
         createdAt: vendor.createdAt,
       });
     }
@@ -170,6 +174,7 @@ export const nearby = query({
       if (sort === "price_asc") return price(a, Infinity) - price(b, Infinity) || a.distanceKm - b.distanceKm;
       if (sort === "price_desc") return price(b, -Infinity) - price(a, -Infinity) || a.distanceKm - b.distanceKm;
       if (sort === "newest") return b.createdAt - a.createdAt;
+      if (sort === "top_rated") return (b.ratingAverage ?? 0) - (a.ratingAverage ?? 0) || b.ratingCount - a.ratingCount || a.distanceKm - b.distanceKm;
       return a.distanceKm - b.distanceKm;
     });
     return results.slice(0, limit);

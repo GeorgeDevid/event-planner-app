@@ -3,6 +3,7 @@
 import { useQuery } from "convex/react";
 import Link from "next/link";
 import { api } from "../../../../convex/_generated/api";
+import { VendorReviews } from "@/components/reviews/vendor-reviews";
 import { FullPageLoader } from "@/components/ui/loader";
 import { VendorProfileView } from "@/components/vendor/profile-view";
 import { useMyVendor } from "@/components/vendor/use-vendor";
@@ -31,6 +32,7 @@ export default function VendorPreview() {
             <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 6l-6 6 6 6" /></svg>
           </Link>
         }
+        footer={<VendorReviews vendorId={profile._id} />}
         actions={
           <>
             <div className="flex-1">

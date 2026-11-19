@@ -37,11 +37,13 @@ import type * as lib_vendorAccess from "../lib/vendorAccess.js";
 import type * as notifications from "../notifications.js";
 import type * as places from "../places.js";
 import type * as reports from "../reports.js";
+import type * as reviews from "../reviews.js";
 import type * as seed from "../seed.js";
 import type * as users from "../users.js";
 import type * as vendorSearch from "../vendorSearch.js";
 import type * as vendorStats from "../vendorStats.js";
 import type * as vendors from "../vendors.js";
+import type * as zzReviewChecks from "../zzReviewChecks.js";
 
 import type {
   ApiFromModules,
@@ -79,11 +81,13 @@ declare const fullApi: ApiFromModules<{
   notifications: typeof notifications;
   places: typeof places;
   reports: typeof reports;
+  reviews: typeof reviews;
   seed: typeof seed;
   users: typeof users;
   vendorSearch: typeof vendorSearch;
   vendorStats: typeof vendorStats;
   vendors: typeof vendors;
+  zzReviewChecks: typeof zzReviewChecks;
 }>;
 
 /**

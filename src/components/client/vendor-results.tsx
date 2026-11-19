@@ -1,5 +1,6 @@
 "use client";
 
+import { RatingBadge } from "@/components/ui/stars";
 import { useQuery } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
 import Image from "next/image";
@@ -14,11 +15,12 @@ import { Segmented, Sheet, Switch } from "@/components/ui/kit";
 import { formatCents, parseDollars } from "@/lib/format";
 
 type Result = FunctionReturnType<typeof api.vendorSearch.nearby>[number];
-type Sort = "nearest" | "price_asc" | "price_desc" | "newest";
+type Sort = "nearest" | "top_rated" | "price_asc" | "price_desc" | "newest";
 type Km = "5" | "10" | "25" | "50";
 
 const SORT_LABEL: Record<Sort, string> = {
   nearest: "Nearest",
+  top_rated: "Top rated",
   price_asc: "Price: low to high",
   price_desc: "Price: high to low",
   newest: "Newest",
@@ -299,7 +301,11 @@ export function VendorCard({ vendor, saved = false, href }: { vendor: Result; sa
             {vendor.companyName}
             {vendor.verified ? <span className="sr-only"> (verified)</span> : null}
           </h3>
-          <p className="truncate text-sm text-ink-2">{vendor.ownerName}</p>
+          {vendor.ratingCount > 0 ? (
+            <RatingBadge average={vendor.ratingAverage} count={vendor.ratingCount} className="mt-0.5" />
+          ) : (
+            <p className="truncate text-sm text-ink-2">{vendor.ownerName}</p>
+          )}
         </div>
         <p className="shrink-0 text-right">
           {vendor.avgPriceCents !== null ? (

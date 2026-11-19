@@ -291,9 +291,17 @@ export const thread = query({
           read: m.from === role ? m.createdAt <= otherReadAt : true,
         })),
       ),
-      bookings: bookings
-        .sort((a, b) => b.createdAt - a.createdAt)
-        .map((b) => ({
+      bookings: (
+        await Promise.all(
+          bookings.map(async (b) => ({
+            b,
+            reviewed: !!(await ctx.db.query("reviews").withIndex("by_booking", (q) => q.eq("bookingId", b._id)).first()),
+          })),
+        )
+      )
+        .sort((x, y) => y.b.createdAt - x.b.createdAt)
+        .map(({ b, reviewed }) => ({
+          reviewed,
           _id: b._id,
           serviceDate: b.serviceDate,
           packageName: b.packageName ?? null,
