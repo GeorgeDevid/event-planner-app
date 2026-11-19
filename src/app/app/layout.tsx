@@ -1,4 +1,5 @@
-import { BottomNav, icons } from "@/components/shell/bottom-nav";
+import { BottomNav } from "@/components/shell/bottom-nav";
+import { icons } from "@/components/shell/nav-icons";
 import { RoleGate } from "@/components/shell/role-gate";
 
 const NAV = [
