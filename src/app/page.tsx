@@ -1,4 +1,5 @@
 import Image, { type StaticImageData } from "next/image";
+import type { CSSProperties } from "react";
 import Link from "next/link";
 import { Reveal } from "@/components/content/reveal";
 import { LandingTestimonials } from "@/components/content/testimonials";
@@ -40,33 +41,40 @@ const STEPS = [
   { title: "Book with confidence", body: "Request a booking, get the vendor's confirmation and keep every detail in one plan." },
 ];
 
+/** Stagger position for an element that fades up when its section scrolls into view. */
+const at = (i: number) => ({ "--i": Math.min(i, 10) }) as CSSProperties;
+
 const searchHref = (service: string) => `/vendors?service=${encodeURIComponent(service)}`;
 
 export default function Landing() {
   return (
     <main className="min-h-dvh bg-cream">
       {/* Hero */}
-      <section className="relative isolate flex min-h-[88dvh] flex-col overflow-hidden bg-navy-900 text-white lg:min-h-[92dvh]">
-        <Image
-          src={hero}
-          alt=""
-          fill
-          priority
-          placeholder="blur"
-          sizes="100vw"
-          className="hero-zoom -z-10 object-cover object-[70%_center]"
-        />
+      <section className="relative isolate flex min-h-[88dvh] flex-col overflow-hidden bg-navy-900 px-5 text-white lg:min-h-[92dvh] lg:px-10">
+        <div aria-hidden="true" className="parallax-hero absolute inset-0 -z-10">
+          <Image
+            src={hero}
+            alt=""
+            fill
+            priority
+            placeholder="blur"
+            sizes="100vw"
+            className="hero-zoom object-cover object-[70%_center]"
+          />
+        </div>
         <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-t from-navy-900 via-navy-900/55 to-navy-900/30 lg:bg-gradient-to-r lg:from-navy-900/95 lg:via-navy-900/60 lg:to-navy-900/0" />
 
-        <header className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-5 pt-6 lg:px-10">
-          <Logo tone="light" />
-          <nav aria-label="Main" className="hidden items-center gap-1 text-sm font-semibold md:flex">
+        <header className="mx-auto flex w-full max-w-7xl items-center gap-4 pt-6">
+          <div className="flex-1">
+            <Logo tone="light" />
+          </div>
+          <nav aria-label="Main" className="hidden items-center gap-1 text-sm font-semibold lg:flex">
             <Link href="/vendors" className="press rounded-full px-4 py-3 text-white/90 hover:bg-white/10 hover:text-white">Browse vendors</Link>
             <Link href="#how-it-works" className="press rounded-full px-4 py-3 text-white/90 hover:bg-white/10 hover:text-white">How it works</Link>
             <Link href="#for-vendors" className="press rounded-full px-4 py-3 text-white/90 hover:bg-white/10 hover:text-white">For vendors</Link>
             <Link href="/faq" className="press rounded-full px-4 py-3 text-white/90 hover:bg-white/10 hover:text-white">FAQ</Link>
           </nav>
-          <div className="flex shrink-0 items-center gap-2 whitespace-nowrap">
+          <div className="flex flex-1 shrink-0 items-center justify-end gap-2 whitespace-nowrap">
             <LinkButton href="/sign-in" variant="ghost" className="text-white hover:bg-white/10">Log in</LinkButton>
             <span className="hidden sm:block">
               <LinkButton href="/sign-up" variant="secondary" className="border-none">Sign up</LinkButton>
@@ -74,8 +82,8 @@ export default function Landing() {
           </div>
         </header>
 
-        <div className="mx-auto mt-auto w-full max-w-7xl px-5 pb-12 lg:mt-0 lg:flex lg:flex-1 lg:items-center lg:px-10 lg:pb-24">
-          <div className="hero-in max-w-2xl">
+        <div className="mx-auto mt-auto w-full max-w-7xl pb-12 md:mt-0 md:flex md:flex-1 md:items-center md:pb-20 lg:pb-24">
+          <div className="hero-in hero-out max-w-2xl">
             <p className="text-xs font-semibold tracking-[0.2em] text-gold-300 uppercase">Greater Toronto Area</p>
             <h1 className="mt-3 font-display text-[46px] leading-[1.02] font-bold sm:text-7xl lg:text-[84px]">
               Every celebration,
@@ -106,8 +114,8 @@ export default function Landing() {
 
       {/* Services */}
       <section aria-labelledby="services" className="px-5 py-16 lg:px-10 lg:py-24">
-        <Reveal className="mx-auto max-w-7xl">
-          <div className="flex flex-wrap items-end justify-between gap-4">
+        <Reveal items className="mx-auto max-w-7xl">
+          <div className="reveal-item flex flex-wrap items-end justify-between gap-4" style={at(0)}>
             <div>
               <p className="text-xs font-semibold tracking-[0.18em] text-gold-text uppercase">Services</p>
               <h2 id="services" className="mt-2 font-display text-[34px] leading-tight font-bold sm:text-[44px]">
@@ -120,7 +128,7 @@ export default function Landing() {
           </div>
           <ul className="mt-8 grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
             {SERVICES.map((s, i) => (
-              <li key={s.name} className={i === 0 ? "col-span-2 md:col-span-1 lg:col-span-2 lg:row-span-2" : ""}>
+              <li key={s.name} className={`reveal-item ${i === 0 ? "col-span-2 md:col-span-1 lg:col-span-2 lg:row-span-2" : ""}`} style={at(i + 1)}>
                 <Link
                   href={searchHref(s.name)}
                   className="press-soft group relative block h-full min-h-44 overflow-hidden rounded-[20px] bg-navy-900 shadow-card sm:min-h-56"
@@ -141,7 +149,7 @@ export default function Landing() {
                 </Link>
               </li>
             ))}
-            <li className="col-span-2 md:col-span-3 lg:col-span-2">
+            <li className="reveal-item col-span-2 md:col-span-1 lg:col-span-2" style={at(12)}>
               <Link
                 href="/vendors"
                 className="press-soft flex h-full min-h-44 flex-col justify-between rounded-[20px] bg-gold-cta p-5 text-navy-900 shadow-card sm:min-h-56"
@@ -159,19 +167,21 @@ export default function Landing() {
 
       {/* How it works */}
       <section id="how-it-works" aria-labelledby="how" className="scroll-mt-6 bg-surface px-5 py-16 lg:px-10 lg:py-24">
-        <Reveal className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
-          <div className="relative order-last aspect-[4/3] overflow-hidden rounded-[28px] shadow-float sm:aspect-[16/10] lg:order-first lg:aspect-[4/5]">
-            <Image src={placeSetting} alt="" fill placeholder="blur" sizes="(min-width: 1024px) 45vw, 100vw" className="object-cover" />
+        <Reveal items className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
+          <div className="reveal-item relative order-last aspect-[4/3] overflow-hidden rounded-[28px] shadow-float sm:aspect-[16/10] lg:order-first lg:aspect-[4/5]" style={at(1)}>
+            <Image src={placeSetting} alt="" fill placeholder="blur" sizes="(min-width: 1024px) 45vw, 100vw" className="scroll-zoom object-cover" />
           </div>
           <div>
-            <p className="text-xs font-semibold tracking-[0.18em] text-gold-text uppercase">How it works</p>
-            <h2 id="how" className="mt-2 font-display text-[34px] leading-tight font-bold sm:text-[44px]">
-              From idea to booked, in one place
-            </h2>
+            <div className="reveal-item" style={at(0)}>
+              <p className="text-xs font-semibold tracking-[0.18em] text-gold-text uppercase">How it works</p>
+              <h2 id="how" className="mt-2 font-display text-[34px] leading-tight font-bold sm:text-[44px]">
+                From idea to booked, in one place
+              </h2>
+            </div>
             <ol className="mt-8 flex flex-col gap-6">
               {STEPS.map((step, i) => (
-                <li key={step.title} className="flex gap-4">
-                  <span aria-hidden="true" className="flex size-11 shrink-0 items-center justify-center rounded-full bg-navy-900 font-display text-xl font-bold text-gold-300">
+                <li key={step.title} className="reveal-item flex gap-4" style={at(i + 2)}>
+                  <span aria-hidden="true" className="flex size-11 shrink-0 items-center justify-center rounded-full bg-navy-900 text-base font-bold text-gold-300">
                     {i + 1}
                   </span>
                   <div>
@@ -181,42 +191,48 @@ export default function Landing() {
                 </li>
               ))}
             </ol>
-            <LinkButton href="/sign-up" variant="navy" className="mt-10 pr-4">
-              Plan my event
-              <ArrowBadge />
-            </LinkButton>
+            <div className="reveal-item mt-10" style={at(5)}>
+              <LinkButton href="/sign-up" variant="navy" className="pr-4">
+                Plan my event
+                <ArrowBadge />
+              </LinkButton>
+            </div>
           </div>
         </Reveal>
       </section>
 
       {/* For vendors */}
       <section id="for-vendors" aria-labelledby="vendors" className="scroll-mt-6 bg-navy-900 px-5 py-16 text-white lg:px-10 lg:py-24">
-        <Reveal className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
+        <Reveal items className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
           <div>
-            <p className="text-xs font-semibold tracking-[0.18em] text-gold-300 uppercase">For vendors</p>
-            <h2 id="vendors" className="mt-2 font-display text-[34px] leading-tight font-bold sm:text-[44px]">
-              Grow your event business across the GTA
-            </h2>
+            <div className="reveal-item" style={at(0)}>
+              <p className="text-xs font-semibold tracking-[0.18em] text-gold-300 uppercase">For vendors</p>
+              <h2 id="vendors" className="mt-2 font-display text-[34px] leading-tight font-bold sm:text-[44px]">
+                Grow your event business across the GTA
+              </h2>
+            </div>
             <ul className="mt-8 flex flex-col gap-4 text-white/90">
               {[
                 "A profile with your photos, packages and prices",
                 "Inquiries from clients who are planning events near you",
                 "Quotes, messages and bookings in one inbox",
                 "A calendar that shows clients when you're free",
-              ].map((line) => (
-                <li key={line} className="flex gap-3">
+              ].map((line, i) => (
+                <li key={line} className="reveal-item flex gap-3" style={at(i + 1)}>
                   <svg aria-hidden="true" className="mt-0.5 shrink-0 text-gold-300" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
                   {line}
                 </li>
               ))}
             </ul>
-            <LinkButton href="/sign-up" variant="gold" className="mt-10 pr-4">
-              List your business
-              <ArrowBadge tone="dark" />
-            </LinkButton>
+            <div className="reveal-item mt-10" style={at(5)}>
+              <LinkButton href="/sign-up" variant="gold" className="pr-4">
+                List your business
+                <ArrowBadge tone="dark" />
+              </LinkButton>
+            </div>
           </div>
-          <div className="relative aspect-[4/3] overflow-hidden rounded-[28px] sm:aspect-[16/10] lg:aspect-[4/5]">
-            <Image src={vendorOwner} alt="" fill placeholder="blur" sizes="(min-width: 1024px) 45vw, 100vw" className="object-cover object-[center_20%]" />
+          <div className="reveal-item relative aspect-[4/3] overflow-hidden rounded-[28px] sm:aspect-[16/10] lg:aspect-[4/5]" style={at(2)}>
+            <Image src={vendorOwner} alt="" fill placeholder="blur" sizes="(min-width: 1024px) 45vw, 100vw" className="scroll-zoom object-cover object-[center_20%]" />
           </div>
         </Reveal>
       </section>

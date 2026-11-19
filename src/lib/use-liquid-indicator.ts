@@ -4,6 +4,30 @@ import { useLayoutEffect, useRef } from "react";
 
 type Box = { l: number; t: number; r: number; b: number };
 
+/**
+ * The item's layout box relative to the container. Uses offsets rather than
+ * getBoundingClientRect so a pressed (scaled-down) tab or a page-transition
+ * transform can't knock the pill off its tab.
+ */
+function boxOf(el: HTMLElement, container: HTMLElement): Box {
+  let l = 0;
+  let t = 0;
+  let node: HTMLElement | null = el;
+  while (node && node !== container) {
+    l += node.offsetLeft;
+    t += node.offsetTop;
+    const parent = node.offsetParent as HTMLElement | null;
+    if (parent && parent !== container && !container.contains(parent)) {
+      // Container isn't positioned: fall back to the visual box.
+      const c = container.getBoundingClientRect();
+      const r = el.getBoundingClientRect();
+      return { l: r.left - c.left, t: r.top - c.top, r: r.right - c.left, b: r.bottom - c.top };
+    }
+    node = parent;
+  }
+  return { l, t, r: l + el.offsetWidth, b: t + el.offsetHeight };
+}
+
 const DURATION = 340;
 // Leading edge: quick and decisive. Trailing edge: catches up and settles.
 const LEAD = "cubic-bezier(0.32, 0.72, 0, 1)";
@@ -16,8 +40,9 @@ const SETTLE = "cubic-bezier(0.23, 1, 0.32, 1)";
  *
  * The indicator is one element covering the container, revealed with a
  * rounded clip-path, so its pill shape never distorts (scaleX would squash
- * the rounded ends). Render it as the container's first child, behind the
- * items:
+ * the rounded ends). It can sit behind the items, or on top of them holding
+ * a recoloured copy of the labels (the tab bars do this, so label colour is
+ * always exactly right under the moving pill):
  *
  *   const { containerRef, indicatorRef } = useLiquidIndicator(activeKey, '[aria-current="page"]');
  *   <ul ref={containerRef} className="relative">
@@ -40,10 +65,7 @@ export function useLiquidIndicator<T extends HTMLElement>(activeKey: string | nu
 
     const measure = (): Box | null => {
       const el = container.querySelector<HTMLElement>(selector);
-      if (!el) return null;
-      const c = container.getBoundingClientRect();
-      const r = el.getBoundingClientRect();
-      return { l: r.left - c.left, t: r.top - c.top, r: r.right - c.left, b: r.bottom - c.top };
+      return el ? boxOf(el, container) : null;
     };
     const to = measure();
     // Corner radius from the tab itself, kept fixed while stretching, so the
@@ -99,9 +121,7 @@ export function useLiquidIndicator<T extends HTMLElement>(activeKey: string | nu
     const ro = new ResizeObserver(() => {
       const el = container.querySelector<HTMLElement>(selector);
       if (!el || anim.current?.playState === "running") return;
-      const c = container.getBoundingClientRect();
-      const r = el.getBoundingClientRect();
-      const box = { l: r.left - c.left, t: r.top - c.top, r: r.right - c.left, b: r.bottom - c.top };
+      const box = boxOf(el, container);
       last.current = box;
       const radius = Math.min(box.r - box.l, box.b - box.t) / 2;
       indicator.style.clipPath = `inset(${box.t}px ${container.clientWidth - box.r}px ${container.clientHeight - box.b}px ${box.l}px round ${radius}px)`;

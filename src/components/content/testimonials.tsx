@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "convex/react";
+import type { CSSProperties } from "react";
 import { api } from "../../../convex/_generated/api";
 import { Reveal } from "@/components/content/reveal";
 import { Stars } from "@/components/ui/stars";
@@ -39,14 +40,16 @@ export function LandingTestimonials() {
   if (!items || items.length === 0) return null;
   return (
     <section aria-labelledby="reviews" className="bg-surface-2/60 px-5 py-16 lg:px-16 lg:py-24">
-      <Reveal className="mx-auto max-w-6xl">
-        <p className="text-xs font-semibold tracking-[0.18em] text-gold-text uppercase">Reviews</p>
-        <h2 id="reviews" className="mt-2 font-display text-[34px] leading-tight font-bold sm:text-[44px]">
-          What people say about us
-        </h2>
+      <Reveal items className="mx-auto max-w-6xl">
+        <div className="reveal-item" style={{ "--i": 0 } as CSSProperties}>
+          <p className="text-xs font-semibold tracking-[0.18em] text-gold-text uppercase">Reviews</p>
+          <h2 id="reviews" className="mt-2 font-display text-[34px] leading-tight font-bold sm:text-[44px]">
+            What people say about us
+          </h2>
+        </div>
         <ul className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {items.map((t) => (
-            <li key={t._id}>
+          {items.map((t, i) => (
+            <li key={t._id} className="reveal-item" style={{ "--i": Math.min(i + 1, 10) } as CSSProperties}>
               <TestimonialCard t={t} />
             </li>
           ))}

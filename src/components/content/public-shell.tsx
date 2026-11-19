@@ -22,8 +22,8 @@ export function PublicShell({ title, children }: { title: string; children: Reac
 export function SiteFooter() {
   return (
     <footer className="bg-navy-900 px-5 pt-12 pb-8 text-sm text-on-navy-2 lg:px-10">
-      <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
-        <div>
+      <div className="mx-auto grid max-w-7xl grid-cols-2 gap-x-6 gap-y-8 md:grid-cols-[1.4fr_1fr_1fr_1fr] md:gap-10">
+        <div className="col-span-2 md:col-span-1">
           <Logo tone="light" />
           <p className="mt-3 max-w-xs">Event vendors across the Greater Toronto Area, and one place to plan it all.</p>
         </div>

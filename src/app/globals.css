@@ -67,6 +67,15 @@
     outline: 3px solid var(--color-gold-text);
     outline-offset: 2px;
   }
+  /* No grey tap flash on phones; taps act at once (no double-tap zoom delay). */
+  a,
+  button,
+  label,
+  [role="tab"],
+  [role="radio"] {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
   /* Fieldsets default to min-content width, which pushes forms off narrow screens. */
   fieldset {
     min-width: 0;
@@ -357,6 +366,10 @@
   .pop-in {
     transition: opacity 180ms ease;
   }
+  .reveal-items .reveal-item,
+  .reveal-items:not([data-visible]) .reveal-item {
+    transform: none;
+  }
   .page-in,
   .stagger > *,
   .hero-in > * {
@@ -382,4 +395,67 @@
   opacity: 0;
   transition: opacity 150ms ease;
   will-change: clip-path;
+}
+
+/* Tab bars: no text selection or long-press callout while tapping between tabs. */
+@utility tab-bar {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* Landing: elements inside a section fade up one after another when it scrolls into view. */
+@utility reveal-items {
+  & .reveal-item {
+    transition:
+      opacity 600ms var(--ease-out),
+      transform 600ms var(--ease-out);
+    transition-delay: calc(var(--i, 0) * 70ms);
+  }
+  &:not([data-visible]) .reveal-item {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+}
+
+/*
+ * Scroll-linked motion on the landing page (browsers with scroll-driven
+ * animations; others simply don't get it): the banner photo drifts slower than
+ * the page and the headline eases away as you scroll past; section photos
+ * settle from a slight zoom as they come into view.
+ */
+@keyframes parallax-drift {
+  to {
+    transform: translateY(14%);
+  }
+}
+@keyframes hero-away {
+  to {
+    opacity: 0.15;
+    transform: translateY(-48px);
+  }
+}
+@keyframes zoom-settle {
+  from {
+    transform: scale(1.12);
+  }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .parallax-hero {
+      animation: parallax-drift linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 100vh;
+    }
+    .hero-out {
+      animation: hero-away linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 75vh;
+    }
+    .scroll-zoom {
+      animation: zoom-settle linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 50%;
+    }
+  }
 }

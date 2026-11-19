@@ -4,10 +4,13 @@ import { useEffect, useRef, useState, type ComponentPropsWithoutRef } from "reac
 
 /**
  * Landing-page section that fades and rises in the first time it scrolls into
- * view (see the `reveal` utility). Marketing pages only: never on screens
+ * view (see the `reveal` / `reveal-items` utilities). Marketing pages only: never on screens
  * people use every day.
  */
-export function Reveal({ className = "", ...props }: ComponentPropsWithoutRef<"div">) {
+export function Reveal({ className = "", items = false, ...props }: ComponentPropsWithoutRef<"div"> & {
+  /** Animate the `.reveal-item` children one after another (`--i` sets the order) instead of the whole block. */
+  items?: boolean;
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
   useEffect(() => {
@@ -25,5 +28,5 @@ export function Reveal({ className = "", ...props }: ComponentPropsWithoutRef<"d
     io.observe(el);
     return () => io.disconnect();
   }, []);
-  return <div ref={ref} data-visible={visible ? "" : undefined} className={`reveal ${className}`} {...props} />;
+  return <div ref={ref} data-visible={visible ? "" : undefined} className={`${items ? "reveal-items" : "reveal"} ${className}`} {...props} />;
 }

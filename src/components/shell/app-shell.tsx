@@ -60,6 +60,23 @@ export function AppShell({
   );
 }
 
+const SIDE_TAB = "flex min-h-11 items-center gap-3 rounded-full px-4 text-sm font-semibold";
+
+function sideContent(item: NavItem, unread: number, withSrText: boolean) {
+  return (
+    <>
+      <span aria-hidden="true">{item.icon}</span>
+      <span className="flex-1">{item.label}</span>
+      {item.unreadBadge && unread > 0 ? (
+        <span className="flex min-w-6 items-center justify-center rounded-full bg-gold-500 px-1.5 text-[11px] font-bold text-navy-900">
+          {unread > 99 ? "99+" : unread}
+          {withSrText ? <span className="sr-only"> unread</span> : null}
+        </span>
+      ) : null}
+    </>
+  );
+}
+
 function SideNav({ items, label, logoSuffix }: { items: NavItem[]; label: string; logoSuffix?: string }) {
   const pathname = usePathname();
   const { current, select } = useOptimisticTab(items, pathname);
@@ -74,33 +91,32 @@ function SideNav({ items, label, logoSuffix }: { items: NavItem[]; label: string
         {logoSuffix ? <p className="mt-1.5 text-[11px] font-semibold tracking-[0.18em] text-gold-300 uppercase">{logoSuffix}</p> : null}
       </div>
       <nav aria-label={label} className="mt-10">
-        <ul ref={containerRef} className="relative flex flex-col gap-1">
-          <span ref={indicatorRef} aria-hidden="true" className="liquid-indicator bg-gold-cta" />
-          {items.map((item, i) => {
-            const active = i === current;
-            return (
-              <li key={item.href} className="relative">
-                <Link
-                  href={item.href}
-                  aria-current={i === onRoute ? "page" : undefined}
-                  data-active={active ? "" : undefined}
-                  onClick={(e) => isPlainClick(e) && select(i)}
-                  className={`press flex min-h-11 items-center gap-3 rounded-full px-4 text-sm font-semibold duration-200 ${
-                    active ? "text-navy-900" : "text-on-navy-2 hover:bg-white/10 hover:text-white"
-                  }`}
-                >
-                  <span aria-hidden="true">{item.icon}</span>
-                  <span className="flex-1">{item.label}</span>
-                  {item.unreadBadge && unread > 0 ? (
-                    <span className="flex min-w-6 items-center justify-center rounded-full bg-gold-500 px-1.5 text-[11px] font-bold text-navy-900">
-                      {unread > 99 ? "99+" : unread}
-                      <span className="sr-only"> unread</span>
-                    </span>
-                  ) : null}
-                </Link>
-              </li>
-            );
-          })}
+        <ul ref={containerRef} className="tab-bar relative flex flex-col gap-1">
+          {items.map((item, i) => (
+            <li key={item.href}>
+              <Link
+                href={item.href}
+                aria-current={i === onRoute ? "page" : undefined}
+                data-active={i === current ? "" : undefined}
+                onClick={(e) => isPlainClick(e) && select(i)}
+                className={`${SIDE_TAB} text-on-navy-2 transition-colors duration-150 hover:bg-white/10 hover:text-white`}
+              >
+                {sideContent(item, unread, true)}
+              </Link>
+            </li>
+          ))}
+          {/* The gold pill, carrying a navy copy of the links, so text inside it is always navy. */}
+          <li aria-hidden="true" className="contents">
+            <span ref={indicatorRef} className="liquid-indicator z-10 bg-gold-cta">
+              <span className="flex flex-col gap-1">
+                {items.map((item) => (
+                  <span key={item.href} className={`${SIDE_TAB} text-navy-900`}>
+                    {sideContent(item, unread, false)}
+                  </span>
+                ))}
+              </span>
+            </span>
+          </li>
         </ul>
       </nav>
       <div className="mt-auto flex flex-col gap-3 border-t border-white/10 px-3 pt-5">

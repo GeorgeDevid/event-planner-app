@@ -119,9 +119,9 @@ export function Segmented<T extends string>({
   const [pending, setPending] = useState<{ value: T; from: T } | null>(null);
   const selected = pending && pending.from === value ? pending.value : value;
   const { containerRef, indicatorRef } = useLiquidIndicator<HTMLDivElement>(selected, '[aria-checked="true"]');
+  const seg = "flex min-h-10 flex-1 items-center justify-center rounded-full px-3 text-sm font-semibold";
   return (
-    <div ref={containerRef} role="radiogroup" aria-label={label} className="relative flex gap-1 rounded-full bg-surface-2 p-1">
-      <span ref={indicatorRef} aria-hidden="true" className="liquid-indicator bg-navy-900" />
+    <div ref={containerRef} role="radiogroup" aria-label={label} className="tab-bar relative flex gap-1 rounded-full bg-surface-2 p-1">
       {options.map((o) => (
         <button
           key={o.value}
@@ -132,13 +132,21 @@ export function Segmented<T extends string>({
             if (o.value !== selected) setPending({ value: o.value, from: value });
             onChange(o.value);
           }}
-          className={`press relative min-h-10 flex-1 rounded-full px-3 text-sm font-semibold duration-200 ${
-            selected === o.value ? "text-white" : "text-ink-2"
-          }`}
+          className={`${seg} text-ink-2`}
         >
           {o.label}
         </button>
       ))}
+      {/* The navy pill with a white copy of the labels, so text inside it is always white. */}
+      <span ref={indicatorRef} aria-hidden="true" className="liquid-indicator z-10 bg-navy-900">
+        <span className="flex h-full gap-1 p-1">
+          {options.map((o) => (
+            <span key={o.value} className={`${seg} text-white`}>
+              {o.label}
+            </span>
+          ))}
+        </span>
+      </span>
     </div>
   );
 }
