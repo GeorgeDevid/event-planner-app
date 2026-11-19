@@ -44,6 +44,7 @@ export const signInOptions = query({
   args: {},
   handler: async () => {
     const id = process.env.AUTH_GOOGLE_CLIENT_ID ?? "";
-    return { google: id.endsWith(".apps.googleusercontent.com") };
+    const secret = process.env.AUTH_GOOGLE_CLIENT_SECRET ?? "";
+    return { google: id.endsWith(".apps.googleusercontent.com") && secret.length > 10 && secret !== "not-set" };
   },
 });
