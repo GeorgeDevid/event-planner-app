@@ -112,7 +112,7 @@ export function MapPicker({
   return (
     <div
       ref={container}
-      className={`${className} w-full overflow-hidden rounded-[20px] bg-surface-2`}
+      className={`${className} relative isolate z-0 w-full overflow-hidden rounded-[20px] bg-surface-2`}
       role="application"
       aria-label={`Map. Drag the pin or tap the map to adjust the ${pinLabel.toLowerCase()}.`}
     />

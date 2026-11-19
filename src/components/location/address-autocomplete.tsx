@@ -31,7 +31,7 @@ export function AddressAutocomplete({
   onPick,
   error,
   helper,
-  placeholder = "Start typing an address, place or postal code",
+  placeholder = "Address, place or postal code",
 }: {
   id: string;
   label: string;
@@ -98,6 +98,9 @@ export function AddressAutocomplete({
   }
 
   async function pick(item: Suggestion) {
+    // Drop any lookup still in flight so it can't reopen the list after the pick.
+    if (timer.current) clearTimeout(timer.current);
+    requestNo.current++;
     setOpen(false);
     setItems([]);
     setLookupError(null);
@@ -263,6 +266,7 @@ export function AddressAutocomplete({
                 </li>
               ) : null}
             </ul>
+            {loading ? <p className="px-4 pb-1 text-[12px] text-ink-2">Looking for more matches…</p> : null}
             <p className="border-t border-line px-4 py-1.5 text-right text-[11px] text-ink-2">
               {source === "google" ? "Suggestions by Google" : "Map data © OpenStreetMap contributors"}
             </p>
