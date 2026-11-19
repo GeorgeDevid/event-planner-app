@@ -17,7 +17,7 @@ export function SignOutButton({ className = "" }: { className?: string }) {
         await signOut();
         router.replace("/sign-in");
       }}
-      className={`min-h-11 rounded-full px-4 text-sm font-semibold ${className}`}
+      className={`press min-h-11 rounded-full px-4 text-sm font-semibold ${className}`}
     >
       {pending ? "Logging out…" : "Log out"}
     </button>

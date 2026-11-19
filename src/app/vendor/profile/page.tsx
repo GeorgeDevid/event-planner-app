@@ -307,7 +307,7 @@ function IconButton({
       title={label}
       disabled={disabled}
       onClick={onClick}
-      className="flex size-11 items-center justify-center rounded-full bg-navy-900/70 text-white disabled:opacity-30"
+      className="press flex size-11 items-center justify-center rounded-full bg-navy-900/70 text-white disabled:opacity-30"
     >
       <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
         <path d={path} />

@@ -44,7 +44,7 @@ function Conversations() {
     <ul className="flex flex-col gap-2">
       {rows.map((r) => (
         <li key={r._id}>
-          <Link href={`/app/messages/${r._id}`} className="flex items-center gap-3 rounded-[20px] bg-surface p-3 shadow-card">
+          <Link href={`/app/messages/${r._id}`} className="press-soft flex items-center gap-3 rounded-[20px] bg-surface p-3 shadow-card">
             <span className="relative size-14 shrink-0 overflow-hidden rounded-2xl bg-dusk">
               {r.coverUrl ? <Image src={r.coverUrl} alt="" fill sizes="56px" className="object-cover" /> : null}
             </span>
@@ -84,7 +84,7 @@ function Bookings() {
     <ul className="flex flex-col gap-2">
       {rows.map((b) => (
         <li key={b._id}>
-          <Link href={b.inquiryId ? `/app/messages/${b.inquiryId}` : "/app/messages"} className="flex items-center justify-between gap-3 rounded-[20px] bg-surface p-4 shadow-card">
+          <Link href={b.inquiryId ? `/app/messages/${b.inquiryId}` : "/app/messages"} className="press-soft flex items-center justify-between gap-3 rounded-[20px] bg-surface p-4 shadow-card">
             <span className="min-w-0">
               <span className="block truncate font-semibold">{b.vendorName}</span>
               <span className="block text-sm text-ink-2">

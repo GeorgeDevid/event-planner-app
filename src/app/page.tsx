@@ -1,5 +1,6 @@
 import Image, { type StaticImageData } from "next/image";
 import Link from "next/link";
+import { Reveal } from "@/components/content/reveal";
 import { LandingTestimonials } from "@/components/content/testimonials";
 import { SiteFooter } from "@/components/content/public-shell";
 import { ArrowBadge, LinkButton } from "@/components/ui/button";
@@ -53,17 +54,17 @@ export default function Landing() {
           priority
           placeholder="blur"
           sizes="100vw"
-          className="-z-10 object-cover object-[70%_center]"
+          className="hero-zoom -z-10 object-cover object-[70%_center]"
         />
         <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-t from-navy-900 via-navy-900/55 to-navy-900/30 lg:bg-gradient-to-r lg:from-navy-900/95 lg:via-navy-900/60 lg:to-navy-900/0" />
 
         <header className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-5 pt-6 lg:px-10">
           <Logo tone="light" />
           <nav aria-label="Main" className="hidden items-center gap-1 text-sm font-semibold md:flex">
-            <Link href="/vendors" className="rounded-full px-4 py-3 text-white/90 hover:bg-white/10 hover:text-white">Browse vendors</Link>
-            <Link href="#how-it-works" className="rounded-full px-4 py-3 text-white/90 hover:bg-white/10 hover:text-white">How it works</Link>
-            <Link href="#for-vendors" className="rounded-full px-4 py-3 text-white/90 hover:bg-white/10 hover:text-white">For vendors</Link>
-            <Link href="/faq" className="rounded-full px-4 py-3 text-white/90 hover:bg-white/10 hover:text-white">FAQ</Link>
+            <Link href="/vendors" className="press rounded-full px-4 py-3 text-white/90 hover:bg-white/10 hover:text-white">Browse vendors</Link>
+            <Link href="#how-it-works" className="press rounded-full px-4 py-3 text-white/90 hover:bg-white/10 hover:text-white">How it works</Link>
+            <Link href="#for-vendors" className="press rounded-full px-4 py-3 text-white/90 hover:bg-white/10 hover:text-white">For vendors</Link>
+            <Link href="/faq" className="press rounded-full px-4 py-3 text-white/90 hover:bg-white/10 hover:text-white">FAQ</Link>
           </nav>
           <div className="flex shrink-0 items-center gap-2 whitespace-nowrap">
             <LinkButton href="/sign-in" variant="ghost" className="text-white hover:bg-white/10">Log in</LinkButton>
@@ -74,7 +75,7 @@ export default function Landing() {
         </header>
 
         <div className="mx-auto mt-auto w-full max-w-7xl px-5 pb-12 lg:mt-0 lg:flex lg:flex-1 lg:items-center lg:px-10 lg:pb-24">
-          <div className="max-w-2xl">
+          <div className="hero-in max-w-2xl">
             <p className="text-xs font-semibold tracking-[0.2em] text-gold-300 uppercase">Greater Toronto Area</p>
             <h1 className="mt-3 font-display text-[46px] leading-[1.02] font-bold sm:text-7xl lg:text-[84px]">
               Every celebration,
@@ -105,7 +106,7 @@ export default function Landing() {
 
       {/* Services */}
       <section aria-labelledby="services" className="px-5 py-16 lg:px-10 lg:py-24">
-        <div className="mx-auto max-w-7xl">
+        <Reveal className="mx-auto max-w-7xl">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <p className="text-xs font-semibold tracking-[0.18em] text-gold-text uppercase">Services</p>
@@ -122,7 +123,7 @@ export default function Landing() {
               <li key={s.name} className={i === 0 ? "col-span-2 md:col-span-1 lg:col-span-2 lg:row-span-2" : ""}>
                 <Link
                   href={searchHref(s.name)}
-                  className="group relative block h-full min-h-44 overflow-hidden rounded-[20px] bg-navy-900 shadow-card sm:min-h-56"
+                  className="press-soft group relative block h-full min-h-44 overflow-hidden rounded-[20px] bg-navy-900 shadow-card sm:min-h-56"
                 >
                   <Image
                     src={s.image}
@@ -143,7 +144,7 @@ export default function Landing() {
             <li className="col-span-2 md:col-span-3 lg:col-span-2">
               <Link
                 href="/vendors"
-                className="flex h-full min-h-44 flex-col justify-between rounded-[20px] bg-gold-cta p-5 text-navy-900 shadow-card sm:min-h-56"
+                className="press-soft flex h-full min-h-44 flex-col justify-between rounded-[20px] bg-gold-cta p-5 text-navy-900 shadow-card sm:min-h-56"
               >
                 <span className="font-display text-[26px] leading-tight font-bold">Not sure where to start?</span>
                 <span className="flex items-center justify-between text-sm font-semibold">
@@ -153,12 +154,12 @@ export default function Landing() {
               </Link>
             </li>
           </ul>
-        </div>
+        </Reveal>
       </section>
 
       {/* How it works */}
       <section id="how-it-works" aria-labelledby="how" className="scroll-mt-6 bg-surface px-5 py-16 lg:px-10 lg:py-24">
-        <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
+        <Reveal className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
           <div className="relative order-last aspect-[4/3] overflow-hidden rounded-[28px] shadow-float sm:aspect-[16/10] lg:order-first lg:aspect-[4/5]">
             <Image src={placeSetting} alt="" fill placeholder="blur" sizes="(min-width: 1024px) 45vw, 100vw" className="object-cover" />
           </div>
@@ -185,12 +186,12 @@ export default function Landing() {
               <ArrowBadge />
             </LinkButton>
           </div>
-        </div>
+        </Reveal>
       </section>
 
       {/* For vendors */}
       <section id="for-vendors" aria-labelledby="vendors" className="scroll-mt-6 bg-navy-900 px-5 py-16 text-white lg:px-10 lg:py-24">
-        <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
+        <Reveal className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
           <div>
             <p className="text-xs font-semibold tracking-[0.18em] text-gold-300 uppercase">For vendors</p>
             <h2 id="vendors" className="mt-2 font-display text-[34px] leading-tight font-bold sm:text-[44px]">
@@ -217,14 +218,14 @@ export default function Landing() {
           <div className="relative aspect-[4/3] overflow-hidden rounded-[28px] sm:aspect-[16/10] lg:aspect-[4/5]">
             <Image src={vendorOwner} alt="" fill placeholder="blur" sizes="(min-width: 1024px) 45vw, 100vw" className="object-cover object-[center_20%]" />
           </div>
-        </div>
+        </Reveal>
       </section>
 
       <LandingTestimonials />
 
       {/* Closing call to action */}
       <section className="px-5 py-16 lg:px-10 lg:py-24">
-        <div className="relative isolate mx-auto max-w-7xl overflow-hidden rounded-[28px] bg-navy-900 px-6 py-12 text-center text-white sm:px-12 lg:py-16">
+        <Reveal className="relative isolate mx-auto max-w-7xl overflow-hidden rounded-[28px] bg-navy-900 px-6 py-12 text-center text-white sm:px-12 lg:py-16">
           <Image src={hero} alt="" fill placeholder="blur" sizes="(min-width: 1280px) 1280px, 100vw" className="-z-10 object-cover opacity-30" />
           <h2 className="font-display text-[34px] leading-tight font-bold sm:text-[48px]">Ready to plan something beautiful?</h2>
           <p className="mx-auto mt-3 max-w-xl text-white/85">It&apos;s free to plan your event and message vendors.</p>
@@ -235,7 +236,7 @@ export default function Landing() {
             </LinkButton>
             <LinkButton href="/vendors" variant="secondary" className="border-none">Browse vendors</LinkButton>
           </div>
-        </div>
+        </Reveal>
       </section>
 
       <SiteFooter />

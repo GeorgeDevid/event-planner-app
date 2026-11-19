@@ -177,7 +177,7 @@ function Lightbox({
         if (e.key === "ArrowRight") go(1);
         if (e.key === "ArrowLeft") go(-1);
       }}
-      className="m-0 h-dvh max-h-none w-screen max-w-none bg-navy-900 p-0 text-white backdrop:bg-navy-900"
+      className="dialog-fade m-0 h-dvh max-h-none w-screen max-w-none bg-navy-900 p-0 text-white backdrop:bg-navy-900"
     >
       <div
         className="relative h-full w-full"

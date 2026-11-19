@@ -236,7 +236,7 @@ export function AddressAutocomplete({
         ) : null}
 
         {showList ? (
-          <div className="absolute inset-x-0 top-full z-30 mt-1 overflow-hidden rounded-2xl bg-surface shadow-float">
+          <div className="pop-in absolute inset-x-0 top-full z-30 mt-1 overflow-hidden rounded-2xl bg-surface shadow-float">
             <ul id={listId} role="listbox" aria-label="Suggested addresses" className="max-h-72 overflow-y-auto p-1">
               {items.map((item, i) => (
                 <li
@@ -248,7 +248,7 @@ export function AddressAutocomplete({
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => void pick(item)}
                   onMouseEnter={() => setActive(i)}
-                  className={`flex min-h-11 cursor-pointer items-start gap-3 rounded-xl px-3 py-2.5 ${i === active ? "bg-surface-2" : ""}`}
+                  className={`flex min-h-11 cursor-pointer items-start gap-3 rounded-xl px-3 py-2.5 transition-colors duration-150 ${i === active ? "bg-surface-2" : ""}`}
                 >
                   <svg aria-hidden="true" className="mt-0.5 shrink-0 text-gold-text" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z" />

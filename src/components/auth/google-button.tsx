@@ -36,7 +36,7 @@ export function GoogleSignIn({ label = "Continue with Google" }: { label?: strin
             setPending(false);
           }
         }}
-        className="flex min-h-[52px] w-full items-center justify-center gap-3 rounded-full border border-control bg-surface px-6 text-[15px] font-semibold text-ink transition-colors hover:bg-surface-2 disabled:cursor-not-allowed disabled:opacity-60"
+        className="press flex min-h-[52px] w-full items-center justify-center gap-3 rounded-full border border-control bg-surface px-6 text-[15px] font-semibold text-ink hover:bg-surface-2 disabled:cursor-not-allowed disabled:opacity-60"
       >
         <span aria-hidden="true" className="flex size-6 items-center justify-center rounded-full bg-navy-900 text-[13px] font-bold text-white">
           G

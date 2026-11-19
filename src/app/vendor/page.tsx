@@ -33,7 +33,7 @@ export default function VendorDashboard() {
       <header className="flex items-center gap-3">
         <span
           aria-hidden="true"
-          className="flex size-11 items-center justify-center rounded-full bg-gold-300 text-sm font-bold text-navy-900"
+          className="press flex size-11 items-center justify-center rounded-full bg-gold-300 text-sm font-bold text-navy-900"
         >
           {vendor.companyName.slice(0, 2).toUpperCase()}
         </span>
@@ -42,7 +42,7 @@ export default function VendorDashboard() {
           <p className="truncate text-[15px] font-bold">{vendor.companyName}</p>
         </div>
         <NotificationBell href="/vendor/notifications" />
-        <Link href="/vendor/account" aria-label="Account" className="flex size-11 items-center justify-center rounded-full bg-surface text-navy-900 shadow-card">
+        <Link href="/vendor/account" aria-label="Account" className="press flex size-11 items-center justify-center rounded-full bg-surface text-navy-900 shadow-card">
           <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></svg>
         </Link>
       </header>
@@ -133,7 +133,7 @@ export default function VendorDashboard() {
       ) : null}
 
       <section aria-label="Shortcuts" className="grid grid-cols-2 gap-3 lg:grid-cols-3">
-        <Link href="/vendor/packages" className="flex flex-col gap-2 rounded-[20px] bg-navy-900 p-4 text-white shadow-card">
+        <Link href="/vendor/packages" className="press-soft flex flex-col gap-2 rounded-[20px] bg-navy-900 p-4 text-white shadow-card">
           <span className="text-xs text-on-navy-2">Average price</span>
           <span className="text-[22px] font-bold text-gold-300">
             {vendor.avgPriceCents ? formatCents(vendor.avgPriceCents) : "Not set"}
@@ -142,7 +142,7 @@ export default function VendorDashboard() {
             {vendor.packages.filter((p) => p.active).length} active packages
           </span>
         </Link>
-        <Link href="/vendor/profile" className="flex flex-col gap-2 rounded-[20px] bg-surface p-4 shadow-card">
+        <Link href="/vendor/profile" className="press-soft flex flex-col gap-2 rounded-[20px] bg-surface p-4 shadow-card">
           <span className="text-xs text-ink-2">Portfolio</span>
           <span className="text-[22px] font-bold">
             {vendor.images.length}
@@ -150,7 +150,7 @@ export default function VendorDashboard() {
           </span>
           <span className="text-sm text-ink-2">photos</span>
         </Link>
-        <Link href="/vendor/reviews" className="col-span-2 flex flex-col gap-2 rounded-[20px] bg-surface p-4 shadow-card lg:col-span-1">
+        <Link href="/vendor/reviews" className="press-soft col-span-2 flex flex-col gap-2 rounded-[20px] bg-surface p-4 shadow-card lg:col-span-1">
           <span className="text-xs text-ink-2">Client reviews</span>
           {vendor.ratingCount ? (
             <span className="flex items-center gap-2">
@@ -166,7 +166,7 @@ export default function VendorDashboard() {
         </Link>
       </section>
 
-      <Link href="/vendor/preview" className="flex items-center gap-4 rounded-[20px] bg-surface p-5 shadow-card">
+      <Link href="/vendor/preview" className="press-soft flex items-center gap-4 rounded-[20px] bg-surface p-5 shadow-card">
         <span className="flex-1">
           <span className="block text-[15px] font-semibold">Preview as a client</span>
           <span className="mt-1 block text-sm text-ink-2">See your profile the way clients will.</span>

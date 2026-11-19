@@ -43,7 +43,7 @@ function Inquiries() {
     <ul className="flex flex-col gap-2">
       {rows.map((r) => (
         <li key={r._id}>
-          <Link href={`/vendor/inquiries/${r._id}`} className={`flex items-start gap-3 rounded-[20px] p-4 shadow-card ${r.unread > 0 ? "bg-surface ring-2 ring-gold-500/60" : "bg-surface"}`}>
+          <Link href={`/vendor/inquiries/${r._id}`} className={`press-soft flex items-start gap-3 rounded-[20px] p-4 shadow-card ${r.unread > 0 ? "bg-surface ring-2 ring-gold-500/60" : "bg-surface"}`}>
             <span className="min-w-0 flex-1">
               <span className="flex items-baseline justify-between gap-2">
                 <span className={`truncate text-[15px] ${r.unread > 0 ? "font-bold" : "font-semibold"}`}>

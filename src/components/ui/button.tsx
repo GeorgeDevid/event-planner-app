@@ -4,7 +4,7 @@ import type { ComponentProps, ReactNode } from "react";
 type Variant = "navy" | "gold" | "secondary" | "ghost" | "danger";
 
 const base =
-  "inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-6 text-[15px] font-semibold transition-[background-color,transform,box-shadow] duration-150 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60";
+  "inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-6 text-[15px] font-semibold press disabled:cursor-not-allowed disabled:opacity-60";
 
 const variants: Record<Variant, string> = {
   navy: "bg-navy-900 text-white shadow-card hover:bg-navy-700",

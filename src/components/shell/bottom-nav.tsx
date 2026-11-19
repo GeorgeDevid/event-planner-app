@@ -28,7 +28,7 @@ export function BottomNav({ items, label }: { items: NavItem[]; label: string })
               <Link
                 href={item.href}
                 aria-current={active ? "page" : undefined}
-                className={`flex min-h-11 items-center gap-2 rounded-full px-4 text-[13px] font-semibold ${
+                className={`press flex min-h-11 items-center gap-2 rounded-full px-4 text-[13px] font-semibold ${
                   active ? "bg-navy-900 text-white" : "text-ink-2"
                 }`}
               >

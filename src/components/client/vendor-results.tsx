@@ -173,7 +173,7 @@ export function VendorResults({
           ) : null}
         </div>
       ) : (
-        <ul className="grid gap-4 md:grid-cols-2">
+        <ul className="stagger grid gap-4 md:grid-cols-2">
           {[...results]
             .sort((a, b) => Number(savedIds.includes(b._id)) - Number(savedIds.includes(a._id)))
             .map((r) => (
@@ -244,8 +244,8 @@ function BudgetFilters({
         <legend className="text-[15px] font-semibold">Average price</legend>
         <p className="text-sm text-ink-2">Matches each vendor&apos;s average package price. Leave blank for any.</p>
         <div className="mt-1 flex gap-3">
-          <TextField id="budget-min" label="Min (CAD)" inputMode="decimal" className="flex-1" value={minText} onChange={(e) => setMinText(e.target.value)} />
-          <TextField id="budget-max" label="Max (CAD)" inputMode="decimal" className="flex-1" value={maxText} onChange={(e) => setMaxText(e.target.value)} />
+          <TextField id="budget-min" label="Min (CAD)" inputMode="decimal" className="min-w-0 flex-1" value={minText} onChange={(e) => setMinText(e.target.value)} />
+          <TextField id="budget-max" label="Max (CAD)" inputMode="decimal" className="min-w-0 flex-1" value={maxText} onChange={(e) => setMaxText(e.target.value)} />
         </div>
         {error ? <p className="text-[13px] font-medium text-danger">{error}</p> : null}
       </fieldset>
@@ -279,7 +279,7 @@ export function VendorCard({ vendor, saved = false, href }: { vendor: Result; sa
   return (
     <Link
       href={href ?? `/app/vendors/${vendor._id}`}
-      className="block h-full overflow-hidden rounded-[24px] bg-surface shadow-card transition-[transform,box-shadow] hover:shadow-float active:scale-[0.99]"
+      className="press-soft block h-full overflow-hidden rounded-[24px] bg-surface shadow-card"
     >
       <div className="relative h-[160px] bg-dusk">
         {vendor.coverUrl ? <Image src={vendor.coverUrl} alt="" fill sizes="(min-width: 768px) 440px, 100vw" className="object-cover" /> : null}

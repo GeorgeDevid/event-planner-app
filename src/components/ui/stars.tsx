@@ -67,7 +67,7 @@ export function StarInput({
       <div className="flex items-center gap-3">
         <div className="flex" onMouseLeave={() => setHover(0)}>
           {[1, 2, 3, 4, 5].map((n) => (
-            <label key={n} className="flex size-11 cursor-pointer items-center justify-center rounded-full has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-gold-text" onMouseEnter={() => setHover(n)}>
+            <label key={n} className="press flex size-11 cursor-pointer items-center justify-center rounded-full has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-gold-text" onMouseEnter={() => setHover(n)}>
               <input type="radio" name={name} value={n} checked={value === n} onChange={() => onChange(n)} className="sr-only" aria-label={`${n} star${n > 1 ? "s" : ""}, ${LABELS[n]}`} />
               <Star size={30} fill={n <= shown ? 1 : 0} />
             </label>

@@ -55,7 +55,7 @@ function EventDashboard() {
         <Image src={heroImage} alt="" fill placeholder="blur" sizes="(min-width: 1024px) 900px, 100vw" className="-z-10 object-cover" />
         <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-b from-navy-900/30 to-navy-900/90" />
         <div className="relative flex items-center justify-between">
-          <Link href="/app/events" aria-label="Back to my events" className="flex size-11 items-center justify-center rounded-full bg-white text-navy-900 shadow-card">
+          <Link href="/app/events" aria-label="Back to my events" className="press flex size-11 items-center justify-center rounded-full bg-white text-navy-900 shadow-card">
             <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 6l-6 6 6 6" /></svg>
           </Link>
           <button type="button" onClick={() => setMenuOpen(true)} className="min-h-11 rounded-full bg-navy-900/60 px-4 text-sm font-semibold">

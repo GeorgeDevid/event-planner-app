@@ -1,5 +1,6 @@
 "use client";
 
+import { useLingering } from "@/lib/use-lingering";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { FormAlert } from "@/components/ui/field";
@@ -108,7 +109,7 @@ export function Tabs<T extends string>({
             type="button"
             aria-selected={active}
             onClick={() => onChange(t.value)}
-            className={`flex min-h-11 items-center gap-2 rounded-full px-4 text-sm font-semibold ${
+            className={`press flex min-h-11 items-center gap-2 rounded-full px-4 text-sm font-semibold ${
               active ? "bg-navy-900 text-white" : "bg-surface text-navy-900 shadow-card hover:bg-surface-2"
             }`}
           >
@@ -169,6 +170,7 @@ export function Drawer({
   children: ReactNode;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
+  const showContent = useLingering(open, 400);
   useEffect(() => {
     const d = ref.current;
     if (!d) return;
@@ -180,7 +182,7 @@ export function Drawer({
       ref={ref}
       onClose={onClose}
       aria-label={title}
-      className="m-0 ml-auto h-dvh max-h-none w-full max-w-[520px] rounded-l-[24px] bg-surface p-0 text-ink shadow-float backdrop:bg-navy-900/45"
+      className="dialog-drawer backdrop-fade m-0 ml-auto h-dvh max-h-none w-full max-w-[520px] rounded-l-[24px] bg-surface p-0 text-ink shadow-float backdrop:bg-navy-900/45"
     >
       <div className="flex h-full flex-col">
         <div className="flex items-center justify-between gap-4 border-b border-line px-6 py-4">
@@ -189,12 +191,12 @@ export function Drawer({
             type="button"
             aria-label="Close"
             onClick={onClose}
-            className="flex size-11 items-center justify-center rounded-full text-ink-2 hover:bg-surface-2"
+            className="press flex size-11 items-center justify-center rounded-full text-ink-2 hover:bg-surface-2"
           >
             <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
           </button>
         </div>
-        <div className="flex-1 overflow-y-auto px-6 py-5">{open ? children : null}</div>
+        <div className="flex-1 overflow-y-auto px-6 py-5">{showContent ? children : null}</div>
       </div>
     </dialog>
   );
@@ -250,7 +252,7 @@ export function ReasonDialog({
       ref={ref}
       onClose={onClose}
       aria-labelledby="reason-title"
-      className="m-auto w-[calc(100%-2rem)] max-w-md rounded-[24px] bg-surface p-0 text-ink shadow-float backdrop:bg-navy-900/45"
+      className="dialog-modal backdrop-fade m-auto w-[calc(100%-2rem)] max-w-md rounded-[24px] bg-surface p-0 text-ink shadow-float backdrop:bg-navy-900/45"
     >
       <form
         className="flex flex-col gap-4 p-6"

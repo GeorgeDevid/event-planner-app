@@ -2,6 +2,7 @@
 
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
+import { Reveal } from "@/components/content/reveal";
 import { Stars } from "@/components/ui/stars";
 
 export type Testimonial = { _id: string; name: string; detail: string | null; quote: string; rating: number };
@@ -38,7 +39,7 @@ export function LandingTestimonials() {
   if (!items || items.length === 0) return null;
   return (
     <section aria-labelledby="reviews" className="bg-surface-2/60 px-5 py-16 lg:px-16 lg:py-24">
-      <div className="mx-auto max-w-6xl">
+      <Reveal className="mx-auto max-w-6xl">
         <p className="text-xs font-semibold tracking-[0.18em] text-gold-text uppercase">Reviews</p>
         <h2 id="reviews" className="mt-2 font-display text-[34px] leading-tight font-bold sm:text-[44px]">
           What people say about us
@@ -50,7 +51,7 @@ export function LandingTestimonials() {
             </li>
           ))}
         </ul>
-      </div>
+      </Reveal>
     </section>
   );
 }

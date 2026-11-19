@@ -52,7 +52,7 @@ export function FormAlert({
   return (
     <div
       role={tone === "error" ? "alert" : "status"}
-      className={`rounded-2xl px-4 py-3 text-sm font-medium ${
+      className={`pop-in rounded-2xl px-4 py-3 text-sm font-medium ${
         tone === "error" ? "bg-danger-bg text-danger" : "bg-info-bg text-info"
       }`}
     >

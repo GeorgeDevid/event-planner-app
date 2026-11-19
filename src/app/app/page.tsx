@@ -34,7 +34,7 @@ export default function ClientHome() {
       <header className="flex items-center gap-3">
         <span
           aria-hidden="true"
-          className="flex size-11 items-center justify-center rounded-full bg-gold-300 text-sm font-bold text-navy-900"
+          className="press flex size-11 items-center justify-center rounded-full bg-gold-300 text-sm font-bold text-navy-900"
         >
           {initials}
         </span>
@@ -57,7 +57,7 @@ export default function ClientHome() {
       <section aria-label="Get started" className="flex flex-col gap-4">
         <Link
           href="/app/events/new"
-          className="group relative isolate flex min-h-[220px] flex-col justify-end overflow-hidden rounded-[24px] bg-navy-900 p-5 text-white shadow-card lg:min-h-[280px] lg:p-8"
+          className="press-soft group relative isolate flex min-h-[220px] flex-col justify-end overflow-hidden rounded-[24px] bg-navy-900 p-5 text-white shadow-card lg:min-h-[280px] lg:p-8"
         >
           <Image src={heroImage} alt="" fill placeholder="blur" sizes="(min-width: 1024px) 900px, 100vw" className="-z-10 object-cover transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none" />
           <span aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-b from-navy-900/10 to-navy-900/85" />
@@ -76,7 +76,7 @@ export default function ClientHome() {
 
         <Link
           href="/app/search"
-          className="flex items-center gap-4 rounded-[20px] bg-surface p-5 shadow-card"
+          className="press-soft flex items-center gap-4 rounded-[20px] bg-surface p-5 shadow-card"
         >
           <span className="flex-1">
             <span className="block text-[15px] font-semibold">Find a service</span>
@@ -108,7 +108,7 @@ function UpcomingEvents() {
           <li key={e._id}>
             <Link
               href={e.status === "draft" ? `/app/events/${e._id}/setup` : `/app/events/${e._id}`}
-              className="flex items-center gap-3 rounded-[20px] bg-surface p-4 shadow-card"
+              className="press-soft flex items-center gap-3 rounded-[20px] bg-surface p-4 shadow-card"
             >
               <span className="min-w-0 flex-1">
                 <span className="block text-xs font-semibold text-gold-text">

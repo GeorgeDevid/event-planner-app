@@ -47,6 +47,11 @@
 
   --shadow-card: 0 8px 24px rgba(14, 26, 47, 0.08);
   --shadow-float: 0 12px 32px rgba(14, 26, 47, 0.14);
+
+  /* Motion. Strong curves; Tailwind's ease-out / ease-in-out use these too. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 @layer base {
@@ -61,6 +66,10 @@
   :focus-visible {
     outline: 3px solid var(--color-gold-text);
     outline-offset: 2px;
+  }
+  /* Fieldsets default to min-content width, which pushes forms off narrow screens. */
+  fieldset {
+    min-width: 0;
   }
 }
 
@@ -95,4 +104,271 @@
   right: 0.75rem;
   bottom: var(--dock, 0.75rem);
   margin-inline: auto;
+}
+
+/* ------------------------------------------------------------------------ */
+/* Motion                                                                    */
+/* Rules: transform + opacity only, ease-out for entries, UI under 300ms,    */
+/* sheets up to 450ms on the drawer curve, nothing on keyboard shortcuts.    */
+/* Reduced motion keeps fades and drops movement (bottom of this section).   */
+/* ------------------------------------------------------------------------ */
+
+/* Press feedback for anything tappable. Cards use the softer one. */
+@utility press {
+  transition-property: transform, background-color, border-color, color, box-shadow, opacity;
+  transition-duration: 160ms;
+  transition-timing-function: var(--ease-out);
+  &:active:not(:disabled):not([aria-disabled="true"]) {
+    transform: scale(0.97);
+  }
+}
+@utility press-soft {
+  transition-property: transform, box-shadow;
+  transition-duration: 200ms;
+  transition-timing-function: var(--ease-out);
+  &:active {
+    transform: scale(0.985);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-float);
+    }
+    &:hover:active {
+      transform: translateY(-1px) scale(0.99);
+    }
+  }
+}
+
+/* A panel that appears in place (suggestion lists, alerts): fades and settles. */
+@utility pop-in {
+  transform-origin: top center;
+  transition:
+    opacity 180ms var(--ease-out),
+    transform 180ms var(--ease-out);
+  @starting-style {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+}
+
+/* Each page's content eases in when you navigate to it (route templates). */
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+@utility page-in {
+  animation: page-in 260ms var(--ease-out) backwards;
+}
+
+/* Lists the user sees occasionally (search results, events): staggered rise. */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+@utility stagger {
+  & > * {
+    animation: rise 320ms var(--ease-out) backwards;
+  }
+  & > :nth-child(2) { animation-delay: 40ms; }
+  & > :nth-child(3) { animation-delay: 80ms; }
+  & > :nth-child(4) { animation-delay: 120ms; }
+  & > :nth-child(5) { animation-delay: 160ms; }
+  & > :nth-child(6) { animation-delay: 200ms; }
+  & > :nth-child(n + 7) { animation-delay: 240ms; }
+}
+
+/* Landing page: hero entrance on load, sections rise in once when scrolled to. */
+@keyframes hero-zoom {
+  from {
+    transform: scale(1.06);
+  }
+}
+@utility hero-zoom {
+  animation: hero-zoom 1800ms var(--ease-out) backwards;
+}
+@utility hero-in {
+  & > * {
+    animation: rise 700ms var(--ease-out) backwards;
+  }
+  & > :nth-child(2) { animation-delay: 90ms; }
+  & > :nth-child(3) { animation-delay: 180ms; }
+  & > :nth-child(4) { animation-delay: 270ms; }
+  & > :nth-child(5) { animation-delay: 360ms; }
+}
+@utility reveal {
+  transition:
+    opacity 700ms var(--ease-out),
+    transform 700ms var(--ease-out);
+  &:not([data-visible]) {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+
+/*
+ * Native <dialog>s: bottom sheet on phones, centred card from sm up, side
+ * drawer for admin, fade for the photo viewer. Closing plays the reverse;
+ * overlay/display stay on screen for the exit via allow-discrete.
+ */
+@utility dialog-sheet {
+  transition:
+    transform 450ms var(--ease-drawer),
+    opacity 250ms var(--ease-out),
+    overlay 450ms var(--ease-drawer) allow-discrete,
+    display 450ms var(--ease-drawer) allow-discrete;
+  transform: translateY(100%);
+  &[open] {
+    transform: translateY(0);
+  }
+  @starting-style {
+    &[open] {
+      transform: translateY(100%);
+    }
+  }
+  @media (width >= 40rem) {
+    transition:
+      transform 250ms var(--ease-out),
+      opacity 250ms var(--ease-out),
+      overlay 250ms var(--ease-out) allow-discrete,
+      display 250ms var(--ease-out) allow-discrete;
+    opacity: 0;
+    transform: scale(0.96);
+    &[open] {
+      opacity: 1;
+      transform: scale(1);
+    }
+    @starting-style {
+      &[open] {
+        opacity: 0;
+        transform: scale(0.96);
+      }
+    }
+  }
+}
+@utility dialog-modal {
+  transition:
+    transform 250ms var(--ease-out),
+    opacity 250ms var(--ease-out),
+    overlay 250ms var(--ease-out) allow-discrete,
+    display 250ms var(--ease-out) allow-discrete;
+  opacity: 0;
+  transform: scale(0.96);
+  &[open] {
+    opacity: 1;
+    transform: scale(1);
+  }
+  @starting-style {
+    &[open] {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+  }
+}
+@utility dialog-drawer {
+  transition:
+    transform 400ms var(--ease-drawer),
+    overlay 400ms var(--ease-drawer) allow-discrete,
+    display 400ms var(--ease-drawer) allow-discrete;
+  transform: translateX(100%);
+  &[open] {
+    transform: translateX(0);
+  }
+  @starting-style {
+    &[open] {
+      transform: translateX(100%);
+    }
+  }
+}
+@utility dialog-fade {
+  transition:
+    opacity 250ms var(--ease-out),
+    overlay 250ms var(--ease-out) allow-discrete,
+    display 250ms var(--ease-out) allow-discrete;
+  opacity: 0;
+  &[open] {
+    opacity: 1;
+  }
+  @starting-style {
+    &[open] {
+      opacity: 0;
+    }
+  }
+}
+/* Backdrops fade with their dialog. */
+@utility backdrop-fade {
+  &::backdrop {
+    transition:
+      opacity 300ms var(--ease-out),
+      overlay 300ms var(--ease-out) allow-discrete,
+      display 300ms var(--ease-out) allow-discrete;
+    opacity: 0;
+  }
+  &[open]::backdrop {
+    opacity: 1;
+  }
+  @starting-style {
+    &[open]::backdrop {
+      opacity: 0;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Keep the fades, drop the movement. */
+  .press:active,
+  .press-soft:active,
+  .press-soft:hover {
+    transform: none;
+  }
+  .pop-in,
+  .reveal,
+  .reveal:not([data-visible]),
+  .dialog-sheet,
+  .dialog-sheet[open],
+  .dialog-modal,
+  .dialog-modal[open],
+  .dialog-drawer,
+  .dialog-drawer[open] {
+    transform: none;
+  }
+  .dialog-drawer,
+  .dialog-sheet {
+    transition:
+      opacity 200ms ease,
+      overlay 200ms ease allow-discrete,
+      display 200ms ease allow-discrete;
+    opacity: 0;
+  }
+  .dialog-drawer[open],
+  .dialog-sheet[open] {
+    opacity: 1;
+  }
+  @starting-style {
+    .dialog-drawer[open],
+    .dialog-sheet[open] {
+      opacity: 0;
+    }
+  }
+  .pop-in {
+    transition: opacity 180ms ease;
+  }
+  .page-in,
+  .stagger > *,
+  .hero-in > * {
+    animation: fade-only 200ms ease backwards;
+    animation-delay: 0ms;
+  }
+  .hero-zoom {
+    animation: none;
+  }
+}
+@keyframes fade-only {
+  from {
+    opacity: 0;
+  }
 }

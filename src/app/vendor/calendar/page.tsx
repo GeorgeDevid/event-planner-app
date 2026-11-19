@@ -81,7 +81,7 @@ export default function VendorCalendar() {
             aria-label="Previous month"
             disabled={!canGoBack}
             onClick={() => shiftMonth(-1)}
-            className="flex size-11 items-center justify-center rounded-full hover:bg-surface-2 disabled:opacity-30"
+            className="press flex size-11 items-center justify-center rounded-full hover:bg-surface-2 disabled:opacity-30"
           >
             <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 6l-6 6 6 6" /></svg>
           </button>
@@ -90,7 +90,7 @@ export default function VendorCalendar() {
             type="button"
             aria-label="Next month"
             onClick={() => shiftMonth(1)}
-            className="flex size-11 items-center justify-center rounded-full hover:bg-surface-2"
+            className="press flex size-11 items-center justify-center rounded-full hover:bg-surface-2"
           >
             <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 6l6 6-6 6" /></svg>
           </button>

@@ -1,5 +1,6 @@
 "use client";
 
+import { useLingering } from "@/lib/use-lingering";
 import Link from "next/link";
 import { useEffect, useRef, type ComponentProps, type ReactNode } from "react";
 
@@ -192,6 +193,7 @@ export function Sheet({
   children: ReactNode;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
+  const showContent = useLingering(open, 450);
   useEffect(() => {
     const dialog = ref.current;
     if (!dialog) return;
@@ -203,7 +205,7 @@ export function Sheet({
       ref={ref}
       onClose={onClose}
       aria-labelledby="sheet-title"
-      className="m-0 mt-auto w-full max-w-none rounded-t-[28px] bg-surface p-0 text-ink shadow-float backdrop:bg-navy-900/45 sm:m-auto sm:max-w-lg sm:rounded-[24px]"
+      className="dialog-sheet backdrop-fade m-0 mt-auto w-full max-w-none rounded-t-[28px] bg-surface p-0 text-ink shadow-float backdrop:bg-navy-900/45 sm:m-auto sm:max-w-lg sm:rounded-[24px]"
     >
       <div className="flex max-h-[85dvh] flex-col gap-5 overflow-y-auto p-6">
         <div aria-hidden="true" className="mx-auto h-1.5 w-10 rounded-full bg-[#d9d2c6] sm:hidden" />
@@ -215,14 +217,14 @@ export function Sheet({
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="flex size-11 items-center justify-center rounded-full text-ink-2 hover:bg-surface-2"
+            className="press flex size-11 items-center justify-center rounded-full text-ink-2 hover:bg-surface-2"
           >
             <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
               <path d="M6 6l12 12M18 6L6 18" />
             </svg>
           </button>
         </div>
-        {open ? children : null}
+        {showContent ? children : null}
       </div>
     </dialog>
   );

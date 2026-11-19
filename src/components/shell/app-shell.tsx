@@ -63,7 +63,7 @@ function SideNav({ items, label, logoSuffix }: { items: NavItem[]; label: string
                 <Link
                   href={item.href}
                   aria-current={active ? "page" : undefined}
-                  className={`flex min-h-11 items-center gap-3 rounded-full px-4 text-sm font-semibold transition-colors ${
+                  className={`press flex min-h-11 items-center gap-3 rounded-full px-4 text-sm font-semibold ${
                     active ? "bg-gold-cta text-navy-900" : "text-on-navy-2 hover:bg-white/10 hover:text-white"
                   }`}
                 >

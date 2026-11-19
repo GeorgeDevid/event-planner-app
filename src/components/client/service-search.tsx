@@ -107,7 +107,7 @@ function SearchForm({
             return (
               <label
                 key={c._id}
-                className={`flex min-h-11 cursor-pointer items-center rounded-full px-4 text-sm font-semibold has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-gold-text ${
+                className={`press flex min-h-11 cursor-pointer items-center rounded-full px-4 text-sm font-semibold has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-gold-text ${
                   on ? "bg-navy-900 text-white" : "bg-surface text-navy-900 shadow-card"
                 }`}
               >

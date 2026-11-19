@@ -27,7 +27,7 @@ export default function VendorPreview() {
           <Link
             href="/vendor/profile"
             aria-label="Back to profile"
-            className="flex size-11 items-center justify-center rounded-full bg-white text-navy-900 shadow-card"
+            className="press flex size-11 items-center justify-center rounded-full bg-white text-navy-900 shadow-card"
           >
             <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 6l-6 6 6 6" /></svg>
           </Link>

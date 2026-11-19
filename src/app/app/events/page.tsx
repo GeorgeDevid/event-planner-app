@@ -23,12 +23,12 @@ export default function MyEvents() {
           <LinkButton href="/app/events/new" className="mt-4">Plan an event</LinkButton>
         </div>
       ) : (
-        <ul className="grid gap-3 md:grid-cols-2">
+        <ul className="stagger grid gap-3 md:grid-cols-2">
           {events.map((e) => {
             const href = e.status === "draft" ? `/app/events/${e._id}/setup` : `/app/events/${e._id}`;
             return (
               <li key={e._id}>
-                <Link href={href} className={`flex items-center gap-4 rounded-[20px] p-4 shadow-card ${e.past ? "bg-surface-2" : "bg-surface"}`}>
+                <Link href={href} className={`press-soft flex items-center gap-4 rounded-[20px] p-4 shadow-card ${e.past ? "bg-surface-2" : "bg-surface"}`}>
                   <div className="min-w-0 flex-1">
                     <p className="text-xs font-semibold text-gold-text">
                       {e.type}
