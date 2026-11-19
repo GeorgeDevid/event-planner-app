@@ -206,7 +206,7 @@ export function LocationForm({ vendor, submitLabel, onSaved }: FormProps) {
       }}
     >
       {error ? <FormAlert>{error}</FormAlert> : null}
-      <div className="flex items-end gap-2">
+      <div className="flex items-start gap-2">
         <TextField
           id="address"
           label="Business address"
@@ -226,15 +226,13 @@ export function LocationForm({ vendor, submitLabel, onSaved }: FormProps) {
             }
           }}
         />
-        <Button
-          type="button"
-          variant="secondary"
-          onClick={findAddress}
-          disabled={searching}
-          className={addressError ? "mb-[26px]" : ""}
-        >
-          {searching ? "Finding…" : "Find"}
-        </Button>
+        {/* Spacer the height of the field label keeps the button level with the input, even when an error shows below it. */}
+        <div className="flex flex-col gap-1.5">
+          <span aria-hidden="true" className="text-xs font-semibold invisible">.</span>
+          <Button type="button" variant="secondary" className="h-[52px]" onClick={findAddress} disabled={searching}>
+            {searching ? "Finding…" : "Find"}
+          </Button>
+        </div>
       </div>
 
       {results ? (
